@@ -1,15 +1,30 @@
 # Moonbox Desktop
 
-> A friendly, cross-platform desktop GUI for the [frp](https://github.com/fatedier/frp) reverse proxy, built with [Tauri v2](https://tauri.app). Supports macOS and Windows.
+> A cross-platform **FRP desktop client** for non-technical users. Built with [Tauri v2](https://tauri.app), runs on macOS and Windows — turns [frp](https://github.com/fatedier/frp) reverse-proxy / NAT-traversal into a one-click experience.
+
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](./LICENSE)
+[![CI](https://github.com/lingjistudio/moonbox-desktop/actions/workflows/ci.yml/badge.svg)](https://github.com/lingjistudio/moonbox-desktop/actions/workflows/ci.yml)
+[![Release](https://github.com/lingjistudio/moonbox-desktop/actions/workflows/release.yml/badge.svg)](https://github.com/lingjistudio/moonbox-desktop/actions/workflows/release.yml)
+[![GitHub Release](https://img.shields.io/github/v/release/lingjistudio/moonbox-desktop?include_prereleases)](https://github.com/lingjistudio/moonbox-desktop/releases)
+[![Platform](https://img.shields.io/badge/platform-macOS%20%7C%20Windows-blue)](#install)
+[![frpc](https://img.shields.io/badge/frpc-v0.69.1-orange)](https://github.com/fatedier/frp)
+[![Tauri](https://img.shields.io/badge/Tauri-v2-blue)](https://tauri.app)
 
 **[简体中文](./README.md)** · English
 
 ---
 
-A friendly desktop GUI for the [frp](https://github.com/fatedier/frp) reverse proxy.
-You bring your own frps server (or any community frps you trust) — Moonbox Desktop
+<video src="./screenshots/main-mv.mp4" controls muted preload="metadata" width="100%"></video>
+
+![Moonbox Desktop main UI: 4-state circular status button + public access URL + endpoint health indicators](./screenshots/main-pic.png)
+
+A friendly **desktop GUI for [frp](https://github.com/fatedier/frp)** — the reverse-proxy / NAT-traversal tool.
+You bring your own frps server (self-hosted or any community frps you trust) — Moonbox Desktop
 takes care of the rest: configuration, lifecycle, connection health, auto-update,
 and a polished tray-resident experience.
+
+No CLI, no hand-edited `frpc.toml`, no manual process management — purpose-built for
+**individual developers, self-hosters, and remote workers** who want frp without the terminal.
 
 ## Highlights
 
@@ -26,8 +41,29 @@ and a polished tray-resident experience.
   each minute by the scheduler.
 - **Engine self-update** — frpc is fetched from upstream GitHub releases,
   SHA256-verified, then atomically swapped without reinstalling the app.
-- **App self-update** — built on `tauri-plugin-updater`, signed and reproducible.
+- **App self-update** — built on `tauri-plugin-updater`.
 - **Bundled frpc sidecar** — users never need to install frp separately.
+
+## Use Cases
+
+- **Remote work** — SSH / RDP into office machines behind NAT, without the VPN hassle.
+- **Self-hosted services** — temporarily expose NAS, Home Assistant, home media, or a personal blog.
+- **Dev & webhook debugging** — expose local ports for Webhook / OAuth / third-party callbacks.
+- **Team tooling** — share a local service with colleagues without a public IP or cloud VM.
+- **Game servers** — open Minecraft (and similar) to friends for a session.
+
+## Relationship to frp
+
+[Moonbox Desktop](https://github.com/lingjistudio/moonbox-desktop) is an **unofficial** desktop GUI client
+for [fatedier/frp](https://github.com/fatedier/frp) and is independent from the frp project.
+
+- **frp** is the open-source reverse-proxy / NAT-traversal project maintained by fatedier.
+- **Moonbox Desktop** does not modify frpc behavior — it handles **configuration generation,
+  subprocess lifecycle, and connection-state visualization** only.
+- The frpc binary (v0.69.1) is bundled via Tauri's sidecar mechanism; users never install frp separately.
+- The frpc engine can auto-update from upstream frp GitHub releases, with atomic swap.
+
+> In short: **frp provides the capability, Moonbox Desktop provides the usability.**
 
 ## Install
 
@@ -61,3 +97,9 @@ pnpm tauri build      # production build for current platform
 ## License
 
 [MIT](./LICENSE).
+
+---
+
+> This project is independent from [fatedier/frp](https://github.com/fatedier/frp).
+> frp's releases and licensing remain with the upstream project;
+> Moonbox Desktop is a desktop client only.
