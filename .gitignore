@@ -1,0 +1,38 @@
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+node_modules
+dist
+dist-ssr
+*.local
+release/
+
+# Editor directories and files
+.vscode/*
+!.vscode/extensions.json
+.idea
+.DS_Store
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# Codegraph MCP 本地索引
+.codegraph/
+
+# frpc sidecar 二进制由开发者手动放置，不入库
+src-tauri/binaries/
+
+# 本地环境变量（含 frpc 版本号等本地配置），参考 .env.example
+.env
+
+# Python 字节码缓存（scripts/check-icons.py 运行产物）
+__pycache__/
+*.py[cod]

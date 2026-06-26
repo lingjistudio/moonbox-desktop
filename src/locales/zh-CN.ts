@@ -1,0 +1,217 @@
+export default {
+  // 公共
+  common_save: "保存",
+  common_saving: "保存中…",
+  common_cancel: "取消",
+  common_close: "关闭",
+  common_minimize: "最小化",
+  common_exit: "退出",
+  common_back: "返回",
+  common_copy: "复制",
+
+  // 应用名 / 标题
+  app_name: "灵机魔盒",
+  settings_view_title: "系统设置",
+
+  // 设置面板 Tab
+  settings_tab_provider: "服务商",
+  settings_tab_proxy: "代理",
+  settings_tab_interface: "界面",
+  settings_tab_launch: "启动",
+  settings_tab_updates: "更新",
+  settings_tab_logs: "日志",
+
+  // 主页 - 圆形按钮 4 态
+  home_btn_stopped: "已停止",
+  home_btn_connecting: "连接中",
+  home_btn_connected: "已连接",
+  home_btn_error: "连接错误",
+  home_btn_hint_stopped: "点击启动",
+  home_btn_hint_connecting: "点击取消",
+  home_btn_hint_connected: "点击停止",
+  home_btn_hint_error: "点击重试",
+  home_btn_aria_stopped: "启动服务",
+  home_btn_aria_connecting: "取消连接并停止服务",
+  home_btn_aria_connected: "停止服务",
+  home_btn_aria_error: "重新启动服务",
+
+  // 主页 - 引导卡片
+  home_guide_title: "尚未配置",
+  home_guide_desc: "前往系统设置填写服务商信息与代理规则",
+  home_guide_btn: "去配置",
+
+  // 主页 - 设置齿轮
+  home_settings_title: "系统设置",
+
+  // 主页 - 端点列表
+  home_endpoints_title: "公网访问地址",
+  home_endpoint_health_pending: "正在检测本地端口…",
+  home_endpoint_health_ok: "本地端口可达：{msg}",
+  home_endpoint_health_fail: "本地端口异常：{msg}",
+  home_endpoint_copy: "复制地址",
+  home_endpoint_copied: "已复制",
+  home_endpoint_copy_aria: "复制 {url}",
+
+  // 主页 - 底部状态条
+  home_status_auto_launch: "开机启动",
+  home_status_auto_launch_on: "已开启",
+  home_status_auto_launch_off: "未开启",
+  home_status_schedule: "定时连接",
+  home_status_schedule_off: "未开启",
+  home_status_schedule_everyday: "每天",
+
+  // 主页 - 星期全称
+  home_weekday_mon: "周一",
+  home_weekday_tue: "周二",
+  home_weekday_wed: "周三",
+  home_weekday_thu: "周四",
+  home_weekday_fri: "周五",
+  home_weekday_sat: "周六",
+  home_weekday_sun: "周日",
+
+  // 服务商 Tab
+  provider_section_title: "服务商",
+  provider_label: "服务商",
+  provider_custom_fallback: "自定义",
+  provider_label_custom_name: "服务商名称",
+  provider_label_server_addr: "服务器地址",
+  provider_label_server_port: "端口号",
+  provider_label_user: "用户名",
+  provider_label_token: "连接密码",
+  provider_ph_custom_name: "例如：我的自建服务",
+  provider_ph_server_addr: "如 server.example.com",
+  provider_ph_user_required: "请输入用户名",
+  provider_ph_user_optional: "可选",
+  provider_ph_token: "无密码可不填",
+  provider_show_password: "显示密码",
+  provider_hide_password: "隐藏密码",
+  provider_err_custom_name: "请输入自定义服务商名称",
+  provider_err_server_addr: "请输入服务器地址",
+  provider_err_server_port: "请输入正确的端口号",
+  provider_err_user: "请输入用户名",
+
+  // 代理 Tab
+  proxy_section_title: "代理规则",
+  proxy_label_type: "类型",
+  proxy_label_name: "名称",
+  proxy_label_local_ip: "本机地址",
+  proxy_label_local_port: "本机端口",
+  proxy_label_remote_port: "外网端口",
+  proxy_ph_name: "如 官网",
+  proxy_ph_local_ip: "本机填 127.0.0.1",
+  proxy_ph_local_port: "如 80",
+  proxy_ph_remote_port: "如 6000",
+  proxy_remove: "删除",
+  proxy_add: "+ 添加代理",
+  proxy_err_min: "请至少添加一个代理",
+  proxy_err_incomplete: "第 {n} 个代理还有未填项",
+  proxy_err_port: "第 {n} 个代理的端口必须大于 0",
+
+  // 界面 Tab
+  interface_section: "界面",
+  interface_language: "界面语言",
+  interface_language_desc: "切换后立即生效，下次启动时记住选择。",
+
+  // 启动 Tab
+  launch_section: "启动",
+  launch_auto_launch: "开机启动",
+  launch_auto_launch_on_desc: "已开启：登录系统后将自动启动灵机魔盒。",
+  launch_auto_launch_off_desc: "已关闭：不会随系统自动启动。",
+  launch_silent_start: "静默启动",
+  launch_silent_start_on_desc: "已开启：开机自启时，应用以隐藏状态启动到系统托盘。",
+  launch_silent_start_off_desc: "已关闭：开机自启时，应用以正常窗口显示。",
+  launch_auto_connect: "开机自动连接",
+  launch_auto_connect_on_desc: "已开启：开机自启后自动建立 frpc 连接。",
+  launch_auto_connect_off_desc: "已关闭：开机自启后需手动启动连接。",
+  launch_blocked_dependency: "需先开启「开机启动」后此项才生效。",
+
+  // 定时连接（启动 Tab 内）
+  schedule_section: "定时连接",
+  schedule_enable: "启用定时连接",
+  schedule_days_label: "启动日",
+  schedule_days_desc: "勾选星期几需要自动连接。",
+  schedule_time_label: "启动 / 断开时间",
+  schedule_time_desc: "24 小时制，HH:MM。启动需早于断开。",
+  schedule_desc_disabled: "勾选开关后，按勾选的工作日自动启停核心引擎。",
+  schedule_desc_unselected: "未选",
+  schedule_summary: "每个{days} {start} 启动，{stop} 断开。",
+  schedule_err_no_day: "请至少选择一天",
+  schedule_err_no_time: "请填写时间",
+  schedule_err_same_time: "启动与断开时间不能相同",
+  schedule_err_order: "启动时间需早于断开时间（暂不支持跨夜）",
+
+  // 通用 - 星期短称
+  weekday_short_mon: "一",
+  weekday_short_tue: "二",
+  weekday_short_wed: "三",
+  weekday_short_thu: "四",
+  weekday_short_fri: "五",
+  weekday_short_sat: "六",
+  weekday_short_sun: "日",
+
+  // 更新 Tab
+  updates_section_app: "软件更新",
+  updates_section_engine: "引擎更新",
+  updates_label_current_version: "当前版本",
+  updates_label_latest_version: "最新版本",
+  updates_label_downloaded: "已下载",
+  updates_label_progress: "下载进度",
+  updates_value_pending_app: "（待重启安装）",
+  updates_value_pending_engine: "（重启后生效）",
+  updates_btn_check: "检查更新",
+  updates_btn_checking: "检查中…",
+  updates_btn_install: "重启并安装",
+  updates_btn_downloading_engine: "下载中…",
+  updates_btn_downloading_app: "下载中 {progress}%",
+  updates_btn_download_app: "立即更新",
+  updates_btn_download_engine: "立即更新",
+
+  // 日志
+  logs_section_title: "运行日志",
+  logs_open_external: "在新窗口打开",
+  logs_clear: "清空",
+  logs_empty: "暂无运行日志",
+
+  // 关闭确认弹窗
+  close_confirm_title: "灵机魔盒正在运行",
+  close_confirm_body: "关闭后将断开全部代理穿透连接。可选择「最小化」保持后台运行，或「退出」彻底停止服务。",
+  close_confirm_minimize: "最小化",
+  close_confirm_exit: "退出",
+
+  // 顶部横幅
+  banner_connect_failed: "连接服务端失败",
+  banner_app_downloaded: "软件本体 v{version} 已下载",
+  banner_app_install_btn: "重启并安装",
+  banner_app_soft: "发现新版本 v{version}，前往「更新」设置",
+  banner_engine_applied: "核心引擎已升级到 v{version}",
+  banner_engine_pending: "v{version} 已下载，重启应用后生效",
+
+  // 通用消息 / Toast
+  msg_auto_launch_on: "已开启开机启动",
+  msg_auto_launch_off: "已关闭开机启动",
+  msg_silent_start_on: "已开启静默启动",
+  msg_silent_start_off: "已关闭静默启动",
+  msg_auto_connect_on: "已开启开机自动连接",
+  msg_auto_connect_off: "已关闭开机自动连接",
+  msg_schedule_saved: "已保存定时连接",
+  msg_save_success: "保存成功",
+  msg_save_failed: "保存失败：{err}",
+  msg_engine_latest: "核心引擎已是最新版本",
+  msg_app_latest: "软件本体已是最新版本",
+  msg_engine_download_ok: "下载完成，重启应用后生效",
+  msg_app_download_ok: "下载完成，点击「重启并安装」生效",
+  msg_download_failed: "下载失败：{err}",
+  msg_install_failed: "安装失败：{err}",
+  msg_language_changed: "已切换为{lang}",
+
+  // 错误回退（来自后端透传 / 内部异常兜底）
+  err_load_prefs: "读取偏好失败",
+  err_save_prefs: "保存偏好失败",
+  err_operation: "操作失败",
+  err_query_auto_launch: "查询开机启动状态失败",
+  err_no_app_update: "无可下载的更新",
+  err_no_app_update_found: "未找到可用更新",
+  err_no_update_downloaded: "尚未下载任何更新",
+  err_download: "下载失败",
+  err_install: "安装失败",
+};

@@ -1,0 +1,11 @@
+{
+  "$schema": "../gen/schemas/desktop-schema.json",
+  "identifier": "logs-window",
+  "description": "Capability for the standalone logs window: only needs to listen to frpc://log, fetch history via get_logs, and close/minimize itself",
+  "windows": ["logs"],
+  "permissions": [
+    "core:default",
+    "core:window:allow-close",
+    "core:window:allow-minimize"
+  ]
+}

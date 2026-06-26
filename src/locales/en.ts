@@ -1,0 +1,217 @@
+export default {
+  // Common
+  common_save: "Save",
+  common_saving: "Saving…",
+  common_cancel: "Cancel",
+  common_close: "Close",
+  common_minimize: "Minimize",
+  common_exit: "Exit",
+  common_back: "Back",
+  common_copy: "Copy",
+
+  // App / title
+  app_name: "灵机魔盒",
+  settings_view_title: "Settings",
+
+  // Settings tabs
+  settings_tab_provider: "Provider",
+  settings_tab_proxy: "Proxies",
+  settings_tab_interface: "Interface",
+  settings_tab_launch: "Launch",
+  settings_tab_updates: "Updates",
+  settings_tab_logs: "Logs",
+
+  // Home - big button 4 states
+  home_btn_stopped: "Stopped",
+  home_btn_connecting: "Connecting",
+  home_btn_connected: "Connected",
+  home_btn_error: "Error",
+  home_btn_hint_stopped: "Tap to start",
+  home_btn_hint_connecting: "Tap to cancel",
+  home_btn_hint_connected: "Tap to stop",
+  home_btn_hint_error: "Tap to retry",
+  home_btn_aria_stopped: "Start service",
+  home_btn_aria_connecting: "Cancel and stop service",
+  home_btn_aria_connected: "Stop service",
+  home_btn_aria_error: "Restart service",
+
+  // Home - guide card
+  home_guide_title: "Not configured",
+  home_guide_desc: "Open settings to set up your provider and proxy rules",
+  home_guide_btn: "Configure",
+
+  // Home - settings gear
+  home_settings_title: "Settings",
+
+  // Home - endpoint list
+  home_endpoints_title: "Public endpoints",
+  home_endpoint_health_pending: "Probing local port…",
+  home_endpoint_health_ok: "Local port reachable: {msg}",
+  home_endpoint_health_fail: "Local port unreachable: {msg}",
+  home_endpoint_copy: "Copy URL",
+  home_endpoint_copied: "Copied",
+  home_endpoint_copy_aria: "Copy {url}",
+
+  // Home - bottom status bar
+  home_status_auto_launch: "Auto-launch",
+  home_status_auto_launch_on: "Enabled",
+  home_status_auto_launch_off: "Disabled",
+  home_status_schedule: "Scheduled",
+  home_status_schedule_off: "Off",
+  home_status_schedule_everyday: "Every day",
+
+  // Home - weekday full names
+  home_weekday_mon: "Mon",
+  home_weekday_tue: "Tue",
+  home_weekday_wed: "Wed",
+  home_weekday_thu: "Thu",
+  home_weekday_fri: "Fri",
+  home_weekday_sat: "Sat",
+  home_weekday_sun: "Sun",
+
+  // Provider tab
+  provider_section_title: "Provider",
+  provider_label: "Provider",
+  provider_custom_fallback: "Custom",
+  provider_label_custom_name: "Provider name",
+  provider_label_server_addr: "Server address",
+  provider_label_server_port: "Port",
+  provider_label_user: "Username",
+  provider_label_token: "Auth token",
+  provider_ph_custom_name: "e.g. My self-hosted server",
+  provider_ph_server_addr: "e.g. server.example.com",
+  provider_ph_user_required: "Enter username",
+  provider_ph_user_optional: "Optional",
+  provider_ph_token: "Leave blank if not required",
+  provider_show_password: "Show token",
+  provider_hide_password: "Hide token",
+  provider_err_custom_name: "Please enter a provider name",
+  provider_err_server_addr: "Please enter a server address",
+  provider_err_server_port: "Please enter a valid port",
+  provider_err_user: "Please enter a username",
+
+  // Proxy tab
+  proxy_section_title: "Proxy rules",
+  proxy_label_type: "Type",
+  proxy_label_name: "Name",
+  proxy_label_local_ip: "Local IP",
+  proxy_label_local_port: "Local port",
+  proxy_label_remote_port: "Remote port",
+  proxy_ph_name: "e.g. Website",
+  proxy_ph_local_ip: "Use 127.0.0.1 for local",
+  proxy_ph_local_port: "e.g. 80",
+  proxy_ph_remote_port: "e.g. 6000",
+  proxy_remove: "Remove",
+  proxy_add: "+ Add proxy",
+  proxy_err_min: "Add at least one proxy",
+  proxy_err_incomplete: "Proxy #{n} has empty fields",
+  proxy_err_port: "Proxy #{n} ports must be greater than 0",
+
+  // Interface tab
+  interface_section: "Interface",
+  interface_language: "Language",
+  interface_language_desc: "Changes apply immediately and persist across launches.",
+
+  // Launch tab
+  launch_section: "Launch",
+  launch_auto_launch: "Auto-launch on login",
+  launch_auto_launch_on_desc: "Enabled: 灵机魔盒 starts automatically when you log in.",
+  launch_auto_launch_off_desc: "Disabled: 灵机魔盒 will not start with the system.",
+  launch_silent_start: "Start minimized to tray",
+  launch_silent_start_on_desc: "Enabled: when auto-launched, the app starts hidden in the system tray.",
+  launch_silent_start_off_desc: "Disabled: when auto-launched, the app opens normally.",
+  launch_auto_connect: "Auto-connect on launch",
+  launch_auto_connect_on_desc: "Enabled: frpc connects automatically after auto-launch.",
+  launch_auto_connect_off_desc: "Disabled: start frpc manually after auto-launch.",
+  launch_blocked_dependency: "Enable Auto-launch first for this to take effect.",
+
+  // Scheduled connect (in Launch tab)
+  schedule_section: "Scheduled connect",
+  schedule_enable: "Enable scheduled connect",
+  schedule_days_label: "Active days",
+  schedule_days_desc: "Choose which weekdays to connect automatically.",
+  schedule_time_label: "Start / Stop time",
+  schedule_time_desc: "24-hour format HH:MM. Start must be earlier than stop.",
+  schedule_desc_disabled: "When enabled, the engine will start and stop on the selected weekdays.",
+  schedule_desc_unselected: "none",
+  schedule_summary: "Every {days} start at {start}, stop at {stop}.",
+  schedule_err_no_day: "Select at least one day",
+  schedule_err_no_time: "Please fill in both times",
+  schedule_err_same_time: "Start and stop times cannot be the same",
+  schedule_err_order: "Start time must be earlier than stop time (overnight not supported yet)",
+
+  // Weekday short names
+  weekday_short_mon: "M",
+  weekday_short_tue: "T",
+  weekday_short_wed: "W",
+  weekday_short_thu: "T",
+  weekday_short_fri: "F",
+  weekday_short_sat: "S",
+  weekday_short_sun: "S",
+
+  // Updates tab
+  updates_section_app: "Application update",
+  updates_section_engine: "Engine update",
+  updates_label_current_version: "Current",
+  updates_label_latest_version: "Latest",
+  updates_label_downloaded: "Downloaded",
+  updates_label_progress: "Progress",
+  updates_value_pending_app: "(pending restart)",
+  updates_value_pending_engine: "(effective on restart)",
+  updates_btn_check: "Check for updates",
+  updates_btn_checking: "Checking…",
+  updates_btn_install: "Restart & install",
+  updates_btn_downloading_engine: "Downloading…",
+  updates_btn_downloading_app: "Downloading {progress}%",
+  updates_btn_download_app: "Update now",
+  updates_btn_download_engine: "Update now",
+
+  // Logs
+  logs_section_title: "Runtime logs",
+  logs_open_external: "Open in new window",
+  logs_clear: "Clear",
+  logs_empty: "No runtime logs yet",
+
+  // Close confirmation dialog
+  close_confirm_title: "灵机魔盒 is running",
+  close_confirm_body: "Closing will disconnect all active proxies. You can Minimize to keep it running in the background, or Exit to stop it completely.",
+  close_confirm_minimize: "Minimize",
+  close_confirm_exit: "Exit",
+
+  // Banners
+  banner_connect_failed: "Failed to connect to server",
+  banner_app_downloaded: "App v{version} downloaded",
+  banner_app_install_btn: "Restart & install",
+  banner_app_soft: "New version v{version} available, see Updates to apply",
+  banner_engine_applied: "Engine upgraded to v{version}",
+  banner_engine_pending: "v{version} downloaded, effective on next launch",
+
+  // Toasts / messages
+  msg_auto_launch_on: "Auto-launch enabled",
+  msg_auto_launch_off: "Auto-launch disabled",
+  msg_silent_start_on: "Silent start enabled",
+  msg_silent_start_off: "Silent start disabled",
+  msg_auto_connect_on: "Auto-connect enabled",
+  msg_auto_connect_off: "Auto-connect disabled",
+  msg_schedule_saved: "Schedule saved",
+  msg_save_success: "Saved",
+  msg_save_failed: "Save failed: {err}",
+  msg_engine_latest: "Engine is up to date",
+  msg_app_latest: "App is up to date",
+  msg_engine_download_ok: "Downloaded, effective on next launch",
+  msg_app_download_ok: "Downloaded, click Restart & install to apply",
+  msg_download_failed: "Download failed: {err}",
+  msg_install_failed: "Install failed: {err}",
+  msg_language_changed: "Switched to {lang}",
+
+  // Fallback errors (backend passthrough / internal)
+  err_load_prefs: "Failed to read preferences",
+  err_save_prefs: "Failed to save preferences",
+  err_operation: "Operation failed",
+  err_query_auto_launch: "Failed to query auto-launch status",
+  err_no_app_update: "No update available",
+  err_no_app_update_found: "Update not found",
+  err_no_update_downloaded: "No update downloaded",
+  err_download: "Download failed",
+  err_install: "Install failed",
+};
