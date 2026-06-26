@@ -14,7 +14,7 @@
 
 ---
 
-![Moonbox Desktop main UI: 4-state circular status button + public access URL + endpoint health indicators](./screenshots/main-pic.webp)
+![Moonbox Desktop main UI: 4-state circular status button + public access URL + endpoint health indicators](./screenshots/main-en.webp)
 
 A friendly **desktop GUI for [frp](https://github.com/fatedier/frp)** — the reverse-proxy / NAT-traversal tool.
 You bring your own frps server (self-hosted or any community frps you trust) — Moonbox Desktop
