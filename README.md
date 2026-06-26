@@ -14,8 +14,6 @@
 
 ---
 
-<video src="./screenshots/main-mv.mp4" controls muted preload="metadata" width="100%"></video>
-
 ![Moonbox Desktop 主界面：4 态圆形状态按钮 + 公网访问地址 + 端点健康指示](./screenshots/main-pic.webp)
 
 面向非技术用户的 **[frp](https://github.com/fatedier/frp) 桌面 GUI 客户端**。
