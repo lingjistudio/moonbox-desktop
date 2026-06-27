@@ -1,4 +1,4 @@
-# Moonbox Desktop
+# 灵机魔盒（Moonbox Desktop）
 
 > 跨平台、面向非技术用户的 **FRP 桌面客户端**。基于 [Tauri v2](https://tauri.app) 构建，支持 macOS 与 Windows，让 [frp](https://github.com/fatedier/frp) 内网穿透开箱即用。
 
