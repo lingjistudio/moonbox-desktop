@@ -68,7 +68,7 @@ jobs:
           tagName: ${{ github.ref_name }}
           releaseName: "Moonbox Desktop ${{ github.ref_name }}"
           releaseBody: "Release ${{ github.ref_name }}"
-          releaseDraft: true
+          releaseDraft: false
           prerelease: false
           assetNamePattern: "MoonboxDesktop_[version]_[arch][setup][ext]"
           args: ${{ matrix.args }}
