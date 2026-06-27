@@ -21,6 +21,7 @@
     "process:default",
     "autostart:default",
     "store:default",
+    "opener:default",
     {
       "identifier": "shell:allow-execute",
       "allow": [

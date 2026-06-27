@@ -54,6 +54,7 @@ pub fn run() {
             Some(vec!["--auto-launched"]),
         ))
         .plugin(tauri_plugin_store::Builder::new().build())
+        .plugin(tauri_plugin_opener::init())
         .manage(FrpcState::default())
         .setup(|app| {
             if let Err(e) = apply_pending_update(app.handle()) {

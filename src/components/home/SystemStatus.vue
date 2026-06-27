@@ -24,7 +24,7 @@ const scheduleSummary = computed(() => {
   const days = s.weekdays
     .map((on, i) => (on ? $t(WEEKDAY_KEYS[i]) : null))
     .filter((v): v is string => v !== null);
-  const dayPart = days.length === 7 ? $t("home_status_schedule_everyday") : days.join("");
+  const dayPart = days.length === 7 ? $t("home_status_schedule_everyday") : days.join(" / ");
   return `${dayPart} ${s.start_time}-${s.stop_time}`;
 });
 </script>
