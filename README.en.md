@@ -101,6 +101,10 @@ macOS (Apple Silicon `aarch64` and Intel `x64`) and Windows (`x64`). Installers 
 
 No. Moonbox bundles the frpc binary (currently v0.69.1) via [Tauri's sidecar mechanism](https://tauri.app) — it works out of the box.
 
+### Is Moonbox open source?
+
+Yes. Moonbox is released under the MIT license, with source code and release cadence published on GitHub at [`lingjistudio/moonbox-desktop`](https://github.com/lingjistudio/moonbox-desktop).
+
 ### What does it add over the raw frp CLI?
 
 Visual proxy rule management, a 4-state circular start/stop button, endpoint health polling (every 3s),
