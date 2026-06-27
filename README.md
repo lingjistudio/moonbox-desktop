@@ -3,12 +3,22 @@
 > 跨平台、面向非技术用户的 **FRP 桌面客户端**。基于 [Tauri v2](https://tauri.app) 构建，支持 macOS 与 Windows，让 [frp](https://github.com/fatedier/frp) 内网穿透开箱即用。
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](./LICENSE)
+[![GitHub Stars](https://img.shields.io/github/stars/lingjistudio/moonbox-desktop?style=social)](https://github.com/lingjistudio/moonbox-desktop/stargazers)
+[![GitHub Forks](https://img.shields.io/github/forks/lingjistudio/moonbox-desktop?style=social)](https://github.com/lingjistudio/moonbox-desktop/forks)
+[![Downloads](https://img.shields.io/github/downloads/lingjistudio/moonbox-desktop/total?style=flat&color=brightgreen&label=%E4%B8%8B%E8%BD%BD%E9%87%8F)](https://github.com/lingjistudio/moonbox-desktop/releases)
 [![CI](https://github.com/lingjistudio/moonbox-desktop/actions/workflows/ci.yml/badge.svg)](https://github.com/lingjistudio/moonbox-desktop/actions/workflows/ci.yml)
 [![Release](https://github.com/lingjistudio/moonbox-desktop/actions/workflows/release.yml/badge.svg)](https://github.com/lingjistudio/moonbox-desktop/actions/workflows/release.yml)
 [![GitHub Release](https://img.shields.io/github/v/release/lingjistudio/moonbox-desktop?include_prereleases)](https://github.com/lingjistudio/moonbox-desktop/releases)
 [![Platform](https://img.shields.io/badge/platform-macOS%20%7C%20Windows-blue)](#下载)
 [![frpc](https://img.shields.io/badge/frpc-v0.69.1-orange)](https://github.com/fatedier/frp)
 [![Tauri](https://img.shields.io/badge/Tauri-v2-blue)](https://tauri.app)
+
+<a href="https://github.com/lingjistudio/moonbox-desktop/releases/latest"><img src="https://img.shields.io/github/v/release/lingjistudio/moonbox-desktop?include_prereleases&style=for-the-badge&label=%E6%9C%80%E6%96%B0%E7%89%88%E6%9C%AC&color=2563eb" alt="最新版本"></a>&nbsp;<a href="https://github.com/lingjistudio/moonbox-desktop/releases/latest"><img src="https://img.shields.io/badge/%E7%81%B5%E6%9C%BA%E9%AD%94%E7%9B%92-%E7%AB%8B%E5%8D%B3%E4%B8%8B%E8%BD%BD-2563eb?style=for-the-badge&logo=github&logoColor=white" alt="立即下载"></a>
+
+<br/>
+
+<a href="https://github.com/lingjistudio/moonbox-desktop/releases/latest"><img src="https://img.shields.io/badge/macOS%20(Apple%20Silicon)-%E4%B8%8B%E8%BD%BD%20DMG-000?style=for-the-badge&logo=apple&logoColor=white" alt="下载 macOS (Apple Silicon)"></a>&nbsp;<a href="https://github.com/lingjistudio/moonbox-desktop/releases/latest"><img src="https://img.shields.io/badge/macOS%20(Intel)-%E4%B8%8B%E8%BD%BD%20DMG-000?style=for-the-badge&logo=apple&logoColor=white" alt="下载 macOS (Intel)"></a>&nbsp;<a href="https://github.com/lingjistudio/moonbox-desktop/releases/latest"><img src="https://img.shields.io/badge/Windows%20(x64)-%E4%B8%8B%E8%BD%BD%20EXE-000?style=for-the-badge&logo=windows&logoColor=white" alt="下载 Windows (x64)"></a>
+
 
 [English](./README.en.md) · **简体中文**
 
@@ -25,15 +35,24 @@
 
 ## 核心特性
 
+### 🚀 上手：零配置，开箱即用
+
+- **内置 frpc 二进制**：通过 Tauri sidecar 机制打包，用户无需单独安装 frp
 - **可视化管理代理规则**：TCP / UDP / HTTP / HTTPS 一面板搞定，主页实时显示本地端口连通性
 - **一键启停 frpc**：圆形大按钮分 4 态（已停止 / 连接中 / 已连接 / 连接错误），「已连接」由 frpc 自身证据支撑而非乐观标记
+
+### ⚙️ 运行：稳定常驻，省心可靠
+
 - **端点健康轮询**：每 3 秒探测一次本地端口可达性，提前发现隧道断裂
 - **系统托盘常驻**：关闭窗口默认隐藏到托盘，frpc 继续后台运行
 - **开机启动 + 静默启动**：自启时直接隐藏到托盘，不打扰用户
 - **定时连接**：按星期多选 + 起止时间，调度器每分钟热加载
+
+### 🔧 维护：自动升级，无需重装
+
 - **核心引擎自更新**：从 frp 上游 GitHub Release 拉取 frpc，SHA256 校验后原子替换，无需重装应用
 - **应用本体自更新**：基于 `tauri-plugin-updater` 的「重启并安装」
-- **内置 frpc 二进制**：通过 Tauri sidecar 机制打包，用户无需单独安装 frp
+
 
 ## 适用场景
 

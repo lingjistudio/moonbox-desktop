@@ -3,12 +3,22 @@
 > A cross-platform **FRP desktop client** for non-technical users. Built with [Tauri v2](https://tauri.app), runs on macOS and Windows — turns [frp](https://github.com/fatedier/frp) reverse-proxy / NAT-traversal into a one-click experience.
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](./LICENSE)
+[![GitHub Stars](https://img.shields.io/github/stars/lingjistudio/moonbox-desktop?style=social)](https://github.com/lingjistudio/moonbox-desktop/stargazers)
+[![GitHub Forks](https://img.shields.io/github/forks/lingjistudio/moonbox-desktop?style=social)](https://github.com/lingjistudio/moonbox-desktop/forks)
+[![Downloads](https://img.shields.io/github/downloads/lingjistudio/moonbox-desktop/total?style=flat&color=brightgreen&label=Downloads)](https://github.com/lingjistudio/moonbox-desktop/releases)
 [![CI](https://github.com/lingjistudio/moonbox-desktop/actions/workflows/ci.yml/badge.svg)](https://github.com/lingjistudio/moonbox-desktop/actions/workflows/ci.yml)
 [![Release](https://github.com/lingjistudio/moonbox-desktop/actions/workflows/release.yml/badge.svg)](https://github.com/lingjistudio/moonbox-desktop/actions/workflows/release.yml)
 [![GitHub Release](https://img.shields.io/github/v/release/lingjistudio/moonbox-desktop?include_prereleases)](https://github.com/lingjistudio/moonbox-desktop/releases)
 [![Platform](https://img.shields.io/badge/platform-macOS%20%7C%20Windows-blue)](#install)
 [![frpc](https://img.shields.io/badge/frpc-v0.69.1-orange)](https://github.com/fatedier/frp)
 [![Tauri](https://img.shields.io/badge/Tauri-v2-blue)](https://tauri.app)
+
+<a href="https://github.com/lingjistudio/moonbox-desktop/releases/latest"><img src="https://img.shields.io/github/v/release/lingjistudio/moonbox-desktop?include_prereleases&style=for-the-badge&label=Latest%20Release&color=2563eb" alt="Latest release"></a>&nbsp;<a href="https://github.com/lingjistudio/moonbox-desktop/releases/latest"><img src="https://img.shields.io/badge/Moonbox-Download-2563eb?style=for-the-badge&logo=github&logoColor=white" alt="Download"></a>
+
+<br/>
+
+<a href="https://github.com/lingjistudio/moonbox-desktop/releases/latest"><img src="https://img.shields.io/badge/macOS%20(Apple%20Silicon)-Download%20DMG-000?style=for-the-badge&logo=apple&logoColor=white" alt="Download macOS (Apple Silicon)"></a>&nbsp;<a href="https://github.com/lingjistudio/moonbox-desktop/releases/latest"><img src="https://img.shields.io/badge/macOS%20(Intel)-Download%20DMG-000?style=for-the-badge&logo=apple&logoColor=white" alt="Download macOS (Intel)"></a>&nbsp;<a href="https://github.com/lingjistudio/moonbox-desktop/releases/latest"><img src="https://img.shields.io/badge/Windows%20(x64)-Download%20EXE-000?style=for-the-badge&logo=windows&logoColor=white" alt="Download Windows (x64)"></a>
+
 
 **[简体中文](./README.md)** · English
 
@@ -26,10 +36,16 @@ No CLI, no hand-edited `frpc.toml`, no manual process management — purpose-bui
 
 ## Highlights
 
+### 🚀 Getting Started — zero config, out of the box
+
+- **Bundled frpc sidecar** — users never need to install frp separately.
 - **Visual proxy management** — TCP / UDP / HTTP / HTTPS rules in a single tab.
 - **One-click start/stop** — a circular button reflects 4 states
   (stopped / connecting / connected / error); the connected state is derived
   from real frpc evidence, not optimistic flags.
+
+### ⚙️ Running — stable, resident, hassle-free
+
 - **Live endpoint health** — local port reachability is polled every 3s so you
   catch broken tunnels before they bite you.
 - **System tray resident** — closing the window hides to tray while frpc keeps
@@ -37,10 +53,13 @@ No CLI, no hand-edited `frpc.toml`, no manual process management — purpose-bui
 - **Launch at login + silent start** — auto-launch can hide straight to tray.
 - **Scheduled connect** — pick weekdays and start/stop times; hot-reloaded
   each minute by the scheduler.
+
+### 🔧 Maintenance — auto-upgraded, no reinstall
+
 - **Engine self-update** — frpc is fetched from upstream GitHub releases,
   SHA256-verified, then atomically swapped without reinstalling the app.
 - **App self-update** — built on `tauri-plugin-updater`.
-- **Bundled frpc sidecar** — users never need to install frp separately.
+
 
 ## Use Cases
 
