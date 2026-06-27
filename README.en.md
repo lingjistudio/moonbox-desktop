@@ -63,11 +63,13 @@ No CLI, no hand-edited `frpc.toml`, no manual process management — purpose-bui
 
 ## Use Cases
 
+Built for work — great for play:
+
 - **Remote work** — SSH / RDP into office machines behind NAT, without the VPN hassle.
 - **Self-hosted services** — temporarily expose NAS, Home Assistant, home media, or a personal blog.
 - **Dev & webhook debugging** — expose local ports for Webhook / OAuth / third-party callbacks.
 - **Team tooling** — share a local service with colleagues without a public IP or cloud VM.
-- **Game servers** — open Minecraft (and similar) to friends for a session.
+- **More** — Minecraft sessions with friends, Webhook callbacks, anything else you need to expose.
 
 ## Relationship to frp
 
