@@ -89,6 +89,14 @@ export default {
   provider_err_server_addr: "请输入服务器地址",
   provider_err_server_port: "请输入正确的端口号",
   provider_err_user: "请输入用户名",
+  provider_btn_test: "测试",
+  provider_testing: "测试中…",
+  provider_test_ok: "延迟 {ms}ms",
+  provider_test_fail_resolve: "地址解析失败",
+  provider_test_fail_timeout: "连接超时",
+  provider_test_fail_refused: "连接被拒绝",
+  provider_test_fail_unreachable: "无法连接到服务器",
+  provider_test_err_empty: "请先填写服务器地址和端口",
 
   // 代理 Tab
   proxy_section_title: "代理规则",

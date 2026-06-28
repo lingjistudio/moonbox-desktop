@@ -89,6 +89,14 @@ export default {
   provider_err_server_addr: "Please enter a server address",
   provider_err_server_port: "Please enter a valid port",
   provider_err_user: "Please enter a username",
+  provider_btn_test: "Test",
+  provider_testing: "Testing…",
+  provider_test_ok: "Latency {ms}ms",
+  provider_test_fail_resolve: "Address resolution failed",
+  provider_test_fail_timeout: "Connection timed out",
+  provider_test_fail_refused: "Connection refused",
+  provider_test_fail_unreachable: "Cannot reach server",
+  provider_test_err_empty: "Please fill in server address and port first",
 
   // Proxy tab
   proxy_section_title: "Proxy rules",

@@ -1,6 +1,8 @@
 <script setup lang="ts">
-import { computed, reactive, ref, watch } from "vue";
+import type { ComponentPublicInstance } from "vue";
+import { computed, nextTick, reactive, ref, watch } from "vue";
 import { useI18n } from "vue-i18n";
+import { invoke } from "@tauri-apps/api/core";
 import { Eye, EyeOff } from "@lucide/vue";
 import { builtinProviders, config } from "../../state";
 import { saveConfig } from "../../commands/config";
@@ -54,6 +56,91 @@ function togglePassword() {
   showPassword.value = !showPassword.value;
 }
 
+/** 服务端延迟测试结果，对应后端 `latency::LatencyResult` */
+interface LatencyResult {
+  ok: boolean;
+  latency_ms: number;
+  error_kind: string | null;
+}
+
+type LatencyStatus = "idle" | "testing" | "ok" | "fail";
+
+const latencyStatus = ref<LatencyStatus>("idle");
+const latencyMs = ref<number | null>(null);
+const latencyErrorKind = ref<string | null>(null);
+
+const latencyText = computed(() => {
+  switch (latencyStatus.value) {
+    case "testing":
+      return $t("provider_testing");
+    case "ok":
+      return $t("provider_test_ok", { ms: latencyMs.value ?? 0 });
+    case "fail":
+      switch (latencyErrorKind.value) {
+        case "empty":
+          return $t("provider_test_err_empty");
+        case "resolve":
+          return $t("provider_test_fail_resolve");
+        case "timeout":
+          return $t("provider_test_fail_timeout");
+        case "refused":
+          return $t("provider_test_fail_refused");
+        default:
+          return $t("provider_test_fail_unreachable");
+      }
+    default:
+      return "";
+  }
+});
+
+const latencyClass = computed(() => {
+  if (latencyStatus.value === "ok") return "latency-ok";
+  if (latencyStatus.value === "fail") return "latency-fail";
+  return "latency-pending";
+});
+
+async function onTestLatency() {
+  if (latencyStatus.value === "testing") return;
+  const addr = form.server_addr.trim();
+  const port = Number(form.server_port);
+  if (!addr || !port || port <= 0) {
+    latencyStatus.value = "fail";
+    latencyErrorKind.value = "empty";
+    return;
+  }
+  latencyStatus.value = "testing";
+  try {
+    const result = await invoke<LatencyResult>("probe_server_latency", {
+      serverAddr: addr,
+      serverPort: port,
+    });
+    if (result.ok) {
+      latencyStatus.value = "ok";
+      latencyMs.value = result.latency_ms;
+      latencyErrorKind.value = null;
+    } else {
+      latencyStatus.value = "fail";
+      latencyErrorKind.value = result.error_kind ?? "unreachable";
+    }
+  } catch (e) {
+    latencyStatus.value = "fail";
+    latencyErrorKind.value = "unreachable";
+    console.warn("[latency] probe_server_latency failed:", e);
+  }
+}
+
+// 地址 / 端口变化时清空旧结果，避免显示与当前输入不一致的延迟数字。
+watch(
+  () => [form.server_addr, form.server_port],
+  () => {
+    if (latencyStatus.value !== "idle") {
+      latencyStatus.value = "idle";
+      latencyMs.value = null;
+      latencyErrorKind.value = null;
+    }
+  },
+);
+
 /** 当前选中的服务商对象（内置只读，自定义可编辑） */
 const currentProvider = computed<Provider | undefined>(() =>
   providers.value.find((p) => p.id === form.provider_id),
@@ -84,15 +171,43 @@ function onlyNumber(e: KeyboardEvent) {
   }
 }
 
-function validate(): string | null {
+/** 可校验字段：与 ProxyTab 的 FieldName 同形——校验失败时聚焦 + 红边框 */
+type FieldName = "custom_name" | "server_addr" | "server_port" | "user";
+
+interface ValidationError {
+  field: FieldName;
+  message: string;
+}
+
+/** 当前出错的字段（null 表示无错误）。用户修改任意字段时清空。 */
+const fieldError = ref<{ field: FieldName } | null>(null);
+
+/** 各字段 DOM 句柄，用于校验失败时 `focus()`。 */
+const inputRefs = reactive<Partial<Record<FieldName, HTMLElement | null>>>({});
+
+function setInputRef(field: FieldName) {
+  return (el: Element | ComponentPublicInstance | null) => {
+    inputRefs[field] = (el as HTMLElement | null) ?? null;
+  };
+}
+
+function isInvalid(field: FieldName): boolean {
+  return fieldError.value?.field === field;
+}
+
+function clearError(field: FieldName) {
+  if (fieldError.value?.field === field) fieldError.value = null;
+}
+
+function validate(): ValidationError | null {
   if (isCustom.value) {
-    if (!form.custom_name.trim()) return $t("provider_err_custom_name");
-    if (!form.server_addr.trim()) return $t("provider_err_server_addr");
-    if (!form.server_port || form.server_port <= 0) return $t("provider_err_server_port");
+    if (!form.custom_name.trim()) return { field: "custom_name", message: $t("provider_err_custom_name") };
+    if (!form.server_addr.trim()) return { field: "server_addr", message: $t("provider_err_server_addr") };
+    if (!form.server_port || form.server_port <= 0) return { field: "server_port", message: $t("provider_err_server_port") };
   } else {
-    if (!form.server_addr.trim()) return $t("provider_err_server_addr");
-    if (!form.server_port || form.server_port <= 0) return $t("provider_err_server_port");
-    if (isUsernameRequired.value && !form.user.trim()) return $t("provider_err_user");
+    if (!form.server_addr.trim()) return { field: "server_addr", message: $t("provider_err_server_addr") };
+    if (!form.server_port || form.server_port <= 0) return { field: "server_port", message: $t("provider_err_server_port") };
+    if (isUsernameRequired.value && !form.user.trim()) return { field: "user", message: $t("provider_err_user") };
   }
   return null;
 }
@@ -100,9 +215,14 @@ function validate(): string | null {
 async function onSave() {
   const err = validate();
   if (err) {
-    showToast(err, "error");
+    fieldError.value = { field: err.field };
+    showToast(err.message, "error");
+    nextTick(() => {
+      inputRefs[err.field]?.focus();
+    });
     return;
   }
+  fieldError.value = null;
   saving.value = true;
   config.provider_id = form.provider_id === CUSTOM_ID ? CUSTOM_ID : form.provider_id;
   config.custom_name = isCustom.value ? form.custom_name.trim() : "";
@@ -139,9 +259,12 @@ async function onSave() {
             <span class="label">{{ $t("provider_label_custom_name") }}</span>
             <input
               class="input"
+              :class="{ 'is-invalid': isInvalid('custom_name') }"
+              :ref="setInputRef('custom_name')"
               v-model="form.custom_name"
               :placeholder="$t('provider_ph_custom_name')"
               maxlength="32"
+              @input="clearError('custom_name')"
             />
           </label>
         </div>
@@ -150,33 +273,40 @@ async function onSave() {
           <span class="label">{{ $t("provider_label_server_addr") }}</span>
           <input
             class="input"
+            :class="{ readonly: isBuiltin, 'is-invalid': isInvalid('server_addr') }"
+            :ref="setInputRef('server_addr')"
             v-model="form.server_addr"
             :placeholder="$t('provider_ph_server_addr')"
             :readonly="isBuiltin"
             :disabled="isBuiltin"
-            :class="{ readonly: isBuiltin }"
+            @input="clearError('server_addr')"
           />
         </label>
         <label class="form-item">
           <span class="label">{{ $t("provider_label_server_port") }}</span>
           <input
             class="input"
+            :class="{ readonly: isBuiltin, 'is-invalid': isInvalid('server_port') }"
+            :ref="setInputRef('server_port')"
             v-model.number="form.server_port"
             type="number"
             min="1"
             max="65535"
             :readonly="isBuiltin"
             :disabled="isBuiltin"
-            :class="{ readonly: isBuiltin }"
             @keydown="onlyNumber"
+            @input="clearError('server_port')"
           />
         </label>
         <label v-if="isCustom || isUsernameRequired" class="form-item">
           <span class="label">{{ $t("provider_label_user") }}</span>
           <input
             class="input"
+            :class="{ 'is-invalid': isInvalid('user') }"
+            :ref="setInputRef('user')"
             v-model="form.user"
             :placeholder="isUsernameRequired ? $t('provider_ph_user_required') : $t('provider_ph_user_optional')"
+            @input="clearError('user')"
           />
         </label>
         <div class="form-item span-2">
@@ -205,6 +335,21 @@ async function onSave() {
     </section>
 
     <footer class="tab-footer">
+      <div class="footer-left">
+        <button
+          type="button"
+          class="btn btn-outline"
+          :disabled="latencyStatus === 'testing'"
+          @click="onTestLatency"
+        >
+          {{ latencyStatus === 'testing' ? $t('provider_testing') : $t('provider_btn_test') }}
+        </button>
+        <span
+          v-if="latencyText"
+          class="latency-result"
+          :class="latencyClass"
+        >{{ latencyText }}</span>
+      </div>
       <button class="btn btn-primary" @click="onSave" :disabled="saving">
         {{ saving ? $t("common_saving") : $t("common_save") }}
       </button>
@@ -267,6 +412,16 @@ async function onSave() {
   color: hsl(var(--muted-foreground));
   cursor: not-allowed;
 }
+/* 校验失败时输入框红色外边框 + 同色微光——与 ProxyTab 的 .input.is-invalid 视觉一致 */
+.input.is-invalid {
+  border-color: hsl(var(--destructive));
+  box-shadow: 0 0 0 2px hsl(var(--destructive) / 0.18);
+}
+.input.is-invalid:focus {
+  outline: none;
+  border-color: hsl(var(--destructive));
+  box-shadow: 0 0 0 3px hsl(var(--destructive) / 0.3);
+}
 .password-field {
   position: relative;
   display: flex;
@@ -309,7 +464,30 @@ async function onSave() {
 }
 .tab-footer {
   display: flex;
-  justify-content: flex-end;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
   padding: 12px 0 0;
+}
+.footer-left {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+.latency-result {
+  font-size: 12px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.latency-ok {
+  color: hsl(var(--success));
+}
+.latency-fail {
+  color: hsl(var(--destructive));
+}
+.latency-pending {
+  color: hsl(var(--muted-foreground));
 }
 </style>

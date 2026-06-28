@@ -20,6 +20,7 @@ use frpc_update::{
     get_frpc_version,
 };
 use prefs::{get_auto_launch, get_prefs, maybe_auto_connect, maybe_silent_start, save_prefs, set_auto_launch};
+use latency::probe_server_latency;
 use process::{frpc_running, frpc_status, get_logs, start_frpc, stop_frpc};
 use proxy_health::check_proxies_health;
 use tray::init_tray;
@@ -27,6 +28,7 @@ use tray::init_tray;
 mod config;
 mod frpc_state;
 mod frpc_update;
+mod latency;
 mod prefs;
 mod process;
 mod proxy_health;
@@ -92,6 +94,7 @@ pub fn run() {
             save_config,
             load_config,
             check_proxies_health,
+            probe_server_latency,
             get_logs,
             get_frpc_version,
             check_frpc_update,
