@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import { reactive, ref } from "vue";
+import type { ComponentPublicInstance } from "vue";
+import { nextTick, reactive, ref } from "vue";
 import { useI18n } from "vue-i18n";
 import { Trash2 } from "@lucide/vue";
 
@@ -14,6 +15,24 @@ const { toast, showToast } = useToast();
 
 /** 代理规则数量上限；达到后隐藏「添加代理」按钮。 */
 const MAX_PROXIES = 5;
+
+/** 校验失败时定位到的字段名（与 ProxyForm 对应）。 */
+type FieldName = "name" | "local_ip" | "local_port" | "remote_port" | "custom_domain";
+
+/** 校验错误：包含代理下标（1-based）+ 字段名 + 提示文案。
+ *  主公要求：校验失败时把焦点移到对应输入框、外边框变红——需要知道「哪个
+ *  代理的哪个字段错了」才能精准定位与高亮。 */
+interface ValidationError {
+  n: number;
+  field: FieldName;
+  message: string;
+}
+
+/** 当前出错的字段（null 表示无错误）。用户修改任意字段时清空。 */
+const fieldError = ref<{ n: number; field: FieldName } | null>(null);
+
+/** 每个代理各字段的 DOM 句柄，用于校验失败时 `focus()`。 */
+const inputRefs = reactive<Record<string, HTMLElement | null>[]>([]);
 
 /**
  * 表单中间类型：所有可能的字段都铺平在同一结构里。
@@ -115,24 +134,45 @@ function isValidDomain(s: string): boolean {
   return labels.every((l) => l.length >= 1 && l.length <= 63 && DOMAIN_LABEL_RE.test(l));
 }
 
-function validate(): string | null {
-  if (form.proxies.length === 0) return $t("proxy_err_min");
+/** 把校验失败的第一个字段定位出来（含代理下标 + 字段名 + 文案）。 */
+function validate(): ValidationError | null {
+  if (form.proxies.length === 0) {
+    return { n: 0, field: "name", message: $t("proxy_err_min") };
+  }
   for (let i = 0; i < form.proxies.length; i++) {
     const n = i + 1;
     const p = form.proxies[i];
-    if (!p.name.trim() || !p.local_ip.trim()) {
-      return $t("proxy_err_incomplete", { n });
-    }
-    if (p.local_port <= 0) return $t("proxy_err_port", { n });
+    if (!p.name.trim()) return { n, field: "name", message: $t("proxy_err_incomplete", { n }) };
+    if (!p.local_ip.trim()) return { n, field: "local_ip", message: $t("proxy_err_incomplete", { n }) };
+    if (p.local_port <= 0) return { n, field: "local_port", message: $t("proxy_err_port", { n }) };
     if (isPortProxy(p.type)) {
-      if (p.remote_port <= 0) return $t("proxy_err_port", { n });
+      if (p.remote_port <= 0) return { n, field: "remote_port", message: $t("proxy_err_port", { n }) };
     } else {
       const d = p.custom_domain.trim();
-      if (!d) return $t("proxy_err_custom_domain", { n });
-      if (!isValidDomain(d)) return $t("proxy_err_domain_format", { n });
+      if (!d) return { n, field: "custom_domain", message: $t("proxy_err_custom_domain", { n }) };
+      if (!isValidDomain(d)) return { n, field: "custom_domain", message: $t("proxy_err_domain_format", { n }) };
     }
   }
   return null;
+}
+
+/** 把函数 ref 注册到对应 (代理下标, 字段名)，方便校验失败时 focus。
+ *  Vue 3 函数 ref 签名要求参数兼容 `Element | ComponentPublicInstance | null`。 */
+function setInputRef(i: number, field: FieldName) {
+  return (el: Element | ComponentPublicInstance | null) => {
+    if (!inputRefs[i]) inputRefs[i] = {};
+    inputRefs[i][field] = (el as HTMLElement | null) ?? null;
+  };
+}
+
+/** 某字段是否当前处于校验失败态——用于决定是否加红边框。 */
+function isInvalid(i: number, field: FieldName): boolean {
+  return fieldError.value?.n === i + 1 && fieldError.value.field === field;
+}
+
+/** 用户改动任意字段时清掉当前代理的错误高亮（避免红边框滞留误导）。 */
+function clearErrorForIndex(i: number) {
+  if (fieldError.value?.n === i + 1) fieldError.value = null;
 }
 
 /** 表单副本 → ProxyConfig union，按 `type` 拆出对应字段。 */
@@ -165,9 +205,16 @@ function fromForm(p: ProxyForm): ProxyConfig {
 async function onSave() {
   const err = validate();
   if (err) {
-    showToast(err, "error");
+    fieldError.value = { n: err.n, field: err.field };
+    showToast(err.message, "error");
+    // 等 v-model 把 class 应用到 DOM 后再聚焦（红边框 + 焦点同步出现）
+    nextTick(() => {
+      const el = inputRefs[err.n - 1]?.[err.field];
+      el?.focus();
+    });
     return;
   }
+  fieldError.value = null;
   saving.value = true;
   config.proxies = form.proxies.map(fromForm);
   const e = await saveConfig();
@@ -191,7 +238,11 @@ async function onSave() {
         <div class="proxy-grid">
           <label class="form-item">
             <span class="label">{{ $t("proxy_label_type") }}</span>
-            <select class="input proxy-type" v-model="p.type">
+            <select
+              class="input proxy-type"
+              v-model="p.type"
+              @change="fieldError = null"
+            >
               <option value="tcp">TCP</option>
               <option value="udp">UDP</option>
               <option value="http">HTTP</option>
@@ -200,23 +251,66 @@ async function onSave() {
           </label>
           <label class="form-item span-3">
             <span class="label">{{ $t("proxy_label_name") }}</span>
-            <input class="input" v-model="p.name" :placeholder="$t('proxy_ph_name')" />
+            <input
+              class="input"
+              :class="{ 'is-invalid': isInvalid(i, 'name') }"
+              :ref="setInputRef(i, 'name')"
+              v-model="p.name"
+              :placeholder="$t('proxy_ph_name')"
+              @input="clearErrorForIndex(i)"
+            />
           </label>
           <label class="form-item" :class="{ 'span-2': isPortProxy(p.type), 'span-3': !isPortProxy(p.type) }">
             <span class="label">{{ $t("proxy_label_local_ip") }}</span>
-            <input class="input" v-model="p.local_ip" :placeholder="$t('proxy_ph_local_ip')" />
+            <input
+              class="input"
+              :class="{ 'is-invalid': isInvalid(i, 'local_ip') }"
+              :ref="setInputRef(i, 'local_ip')"
+              v-model="p.local_ip"
+              :placeholder="$t('proxy_ph_local_ip')"
+              @input="clearErrorForIndex(i)"
+            />
           </label>
           <label class="form-item">
             <span class="label">{{ $t("proxy_label_local_port") }}</span>
-            <input class="input" v-model.number="p.local_port" type="number" min="1" max="65535" :placeholder="$t('proxy_ph_local_port')" @keydown="onlyNumber" />
+            <input
+              class="input"
+              :class="{ 'is-invalid': isInvalid(i, 'local_port') }"
+              :ref="setInputRef(i, 'local_port')"
+              v-model.number="p.local_port"
+              type="number"
+              min="1"
+              max="65535"
+              :placeholder="$t('proxy_ph_local_port')"
+              @keydown="onlyNumber"
+              @input="clearErrorForIndex(i)"
+            />
           </label>
           <label v-if="isPortProxy(p.type)" class="form-item">
             <span class="label">{{ $t("proxy_label_remote_port") }}</span>
-            <input class="input" v-model.number="p.remote_port" type="number" min="1" max="65535" :placeholder="$t('proxy_ph_remote_port')" @keydown="onlyNumber" />
+            <input
+              class="input"
+              :class="{ 'is-invalid': isInvalid(i, 'remote_port') }"
+              :ref="setInputRef(i, 'remote_port')"
+              v-model.number="p.remote_port"
+              type="number"
+              min="1"
+              max="65535"
+              :placeholder="$t('proxy_ph_remote_port')"
+              @keydown="onlyNumber"
+              @input="clearErrorForIndex(i)"
+            />
           </label>
           <label v-else class="form-item span-4">
             <span class="label">{{ $t("proxy_label_custom_domain") }}</span>
-            <input class="input" v-model="p.custom_domain" :placeholder="$t('proxy_ph_custom_domain')" />
+            <input
+              class="input"
+              :class="{ 'is-invalid': isInvalid(i, 'custom_domain') }"
+              :ref="setInputRef(i, 'custom_domain')"
+              v-model="p.custom_domain"
+              :placeholder="$t('proxy_ph_custom_domain')"
+              @input="clearErrorForIndex(i)"
+            />
           </label>
         </div>
         <div v-if="!isPortProxy(p.type)" class="proxy-hint">
@@ -309,6 +403,16 @@ async function onSave() {
   display: grid;
   grid-template-columns: 1.4fr 1fr 1fr 1fr;
   gap: 8px;
+}
+/* 校验失败时输入框红色外边框 + 同色微光，提醒用户 */
+.input.is-invalid {
+  border-color: hsl(var(--destructive));
+  box-shadow: 0 0 0 2px hsl(var(--destructive) / 0.18);
+}
+.input.is-invalid:focus {
+  outline: none;
+  border-color: hsl(var(--destructive));
+  box-shadow: 0 0 0 3px hsl(var(--destructive) / 0.3);
 }
 .proxy-hint {
   margin-top: 8px;
