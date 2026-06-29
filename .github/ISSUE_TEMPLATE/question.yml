@@ -8,7 +8,7 @@ body:
     attributes:
       value: |
         ⚠️ 通用问题（部署、frps 服务端搭建、自建节点推荐）更推荐去
-        [Discussions](https://github.com/lingjistudio/moonbox-desktop/discussions) 提问，
+        [Discussions](https://github.com/MoonProxyHQ/moonproxy-desktop/discussions) 提问，
         Issue 用于跟踪明确的 Bug / Feature。
 
   - type: textarea

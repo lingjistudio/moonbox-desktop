@@ -1,12 +1,12 @@
 [package]
-name = "moonbox-desktop"
+name = "moonproxy-desktop"
 version = "1.0.1"
-description = "Moonbox Desktop - a cross-platform GUI client for frp"
-authors = ["lingjistudio"]
+description = "MoonProxy - a cross-platform GUI client for frp"
+authors = ["MoonProxyHQ"]
 edition = "2021"
 
 [lib]
-name = "moonbox_desktop_lib"
+name = "moonproxy_desktop_lib"
 crate-type = ["staticlib", "cdylib", "rlib"]
 
 [build-dependencies]

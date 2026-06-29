@@ -1,33 +1,33 @@
-# Moonbox Desktop
+# MoonProxy
 
 > A cross-platform **FRP desktop client** for non-technical users. Built with [Tauri v2](https://tauri.app), runs on macOS and Windows — turns [frp](https://github.com/fatedier/frp) reverse-proxy / NAT-traversal into a one-click experience.
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](./LICENSE)
-[![GitHub Stars](https://img.shields.io/github/stars/lingjistudio/moonbox-desktop?style=social)](https://github.com/lingjistudio/moonbox-desktop/stargazers)
-[![GitHub Forks](https://img.shields.io/github/forks/lingjistudio/moonbox-desktop?style=social)](https://github.com/lingjistudio/moonbox-desktop/forks)
-[![Downloads](https://img.shields.io/github/downloads/lingjistudio/moonbox-desktop/total?style=flat&color=brightgreen&label=Downloads)](https://github.com/lingjistudio/moonbox-desktop/releases)
-[![CI](https://github.com/lingjistudio/moonbox-desktop/actions/workflows/ci.yml/badge.svg)](https://github.com/lingjistudio/moonbox-desktop/actions/workflows/ci.yml)
-[![Release](https://github.com/lingjistudio/moonbox-desktop/actions/workflows/release.yml/badge.svg)](https://github.com/lingjistudio/moonbox-desktop/actions/workflows/release.yml)
-[![GitHub Release](https://img.shields.io/github/v/release/lingjistudio/moonbox-desktop?include_prereleases)](https://github.com/lingjistudio/moonbox-desktop/releases)
+[![GitHub Stars](https://img.shields.io/github/stars/MoonProxyHQ/moonproxy-desktop?style=social)](https://github.com/MoonProxyHQ/moonproxy-desktop/stargazers)
+[![GitHub Forks](https://img.shields.io/github/forks/MoonProxyHQ/moonproxy-desktop?style=social)](https://github.com/MoonProxyHQ/moonproxy-desktop/forks)
+[![Downloads](https://img.shields.io/github/downloads/MoonProxyHQ/moonproxy-desktop/total?style=flat&color=brightgreen&label=Downloads)](https://github.com/MoonProxyHQ/moonproxy-desktop/releases)
+[![CI](https://github.com/MoonProxyHQ/moonproxy-desktop/actions/workflows/ci.yml/badge.svg)](https://github.com/MoonProxyHQ/moonproxy-desktop/actions/workflows/ci.yml)
+[![Release](https://github.com/MoonProxyHQ/moonproxy-desktop/actions/workflows/release.yml/badge.svg)](https://github.com/MoonProxyHQ/moonproxy-desktop/actions/workflows/release.yml)
+[![GitHub Release](https://img.shields.io/github/v/release/MoonProxyHQ/moonproxy-desktop?include_prereleases)](https://github.com/MoonProxyHQ/moonproxy-desktop/releases)
 [![Platform](https://img.shields.io/badge/platform-macOS%20%7C%20Windows-blue)](#install)
 [![frpc](https://img.shields.io/badge/frpc-v0.69.1-orange)](https://github.com/fatedier/frp)
 [![Tauri](https://img.shields.io/badge/Tauri-v2-blue)](https://tauri.app)
 
-<a href="https://github.com/lingjistudio/moonbox-desktop/releases/latest"><img src="https://img.shields.io/github/v/release/lingjistudio/moonbox-desktop?include_prereleases&style=for-the-badge&label=Latest%20Release&color=2563eb" alt="Latest release"></a>&nbsp;<a href="https://github.com/lingjistudio/moonbox-desktop/releases/latest"><img src="https://img.shields.io/badge/Moonbox-Download-2563eb?style=for-the-badge&logo=github&logoColor=white" alt="Download"></a>
+<a href="https://github.com/MoonProxyHQ/moonproxy-desktop/releases/latest"><img src="https://img.shields.io/github/v/release/MoonProxyHQ/moonproxy-desktop?include_prereleases&style=for-the-badge&label=Latest%20Release&color=2563eb" alt="Latest release"></a>&nbsp;<a href="https://github.com/MoonProxyHQ/moonproxy-desktop/releases/latest"><img src="https://img.shields.io/badge/MoonProxy-Download-2563eb?style=for-the-badge&logo=github&logoColor=white" alt="Download"></a>
 
 <br/>
 
-<a href="https://github.com/lingjistudio/moonbox-desktop/releases/latest"><img src="https://img.shields.io/badge/macOS%20(Apple%20Silicon)-Download%20DMG-000?style=for-the-badge&logo=apple&logoColor=white" alt="Download macOS (Apple Silicon)"></a>&nbsp;<a href="https://github.com/lingjistudio/moonbox-desktop/releases/latest"><img src="https://img.shields.io/badge/macOS%20(Intel)-Download%20DMG-000?style=for-the-badge&logo=apple&logoColor=white" alt="Download macOS (Intel)"></a>&nbsp;<a href="https://github.com/lingjistudio/moonbox-desktop/releases/latest"><img src="https://img.shields.io/badge/Windows%20(x64)-Download%20EXE-000?style=for-the-badge&logo=windows&logoColor=white" alt="Download Windows (x64)"></a>
+<a href="https://github.com/MoonProxyHQ/moonproxy-desktop/releases/latest"><img src="https://img.shields.io/badge/macOS%20(Apple%20Silicon)-Download%20DMG-000?style=for-the-badge&logo=apple&logoColor=white" alt="Download macOS (Apple Silicon)"></a>&nbsp;<a href="https://github.com/MoonProxyHQ/moonproxy-desktop/releases/latest"><img src="https://img.shields.io/badge/macOS%20(Intel)-Download%20DMG-000?style=for-the-badge&logo=apple&logoColor=white" alt="Download macOS (Intel)"></a>&nbsp;<a href="https://github.com/MoonProxyHQ/moonproxy-desktop/releases/latest"><img src="https://img.shields.io/badge/Windows%20(x64)-Download%20EXE-000?style=for-the-badge&logo=windows&logoColor=white" alt="Download Windows (x64)"></a>
 
 
 **[简体中文](./README.md)** · English
 
 ---
 
-![Moonbox Desktop main UI: 4-state circular status button + public access URL + endpoint health indicators](./screenshots/main-en.webp)
+![MoonProxy main UI: 4-state circular status button + public access URL + endpoint health indicators](./screenshots/main-en.webp)
 
 A friendly **desktop GUI for [frp](https://github.com/fatedier/frp)** — the reverse-proxy / NAT-traversal tool.
-You bring your own frps server (self-hosted or any community frps you trust) — Moonbox Desktop
+You bring your own frps server (self-hosted or any community frps you trust) — MoonProxy
 takes care of the rest: configuration, lifecycle, connection health, auto-update,
 and a polished tray-resident experience.
 
@@ -73,37 +73,37 @@ Built for work — great for play:
 
 ## Relationship to frp
 
-[Moonbox Desktop](https://github.com/lingjistudio/moonbox-desktop) is an **unofficial** desktop GUI client
+[MoonProxy](https://github.com/MoonProxyHQ/moonproxy-desktop) is an **unofficial** desktop GUI client
 for [fatedier/frp](https://github.com/fatedier/frp) and is independent from the frp project.
 
 - **frp** is the open-source reverse-proxy / NAT-traversal project maintained by fatedier.
-- **Moonbox Desktop** does not modify frpc behavior — it handles **configuration generation,
+- **MoonProxy** does not modify frpc behavior — it handles **configuration generation,
   subprocess lifecycle, and connection-state visualization** only.
 - The frpc binary (v0.69.1) is bundled via Tauri's sidecar mechanism; users never install frp separately.
 - The frpc engine can auto-update from upstream frp GitHub releases, with atomic swap.
 
-> In short: **frp provides the capability, Moonbox Desktop provides the usability.**
+> In short: **frp provides the capability, MoonProxy provides the usability.**
 
 ## FAQ
 
-### What is Moonbox?
+### What is MoonProxy?
 
-Moonbox (Chinese name: **灵机魔盒**) is a cross-platform **FRP (Fast Reverse Proxy) tunnel desktop client**
+MoonProxy (Chinese name: **月神代理**) is a cross-platform **FRP (Fast Reverse Proxy) tunnel desktop client**
 for non-technical users, built on [Tauri v2](https://tauri.app). It wraps frpc command-line complexity —
 config files, process management, health checks — into a graphical interface.
 
 ### Which platforms does it support?
 
 macOS (Apple Silicon `aarch64` and Intel `x64`) and Windows (`x64`). Installers are published on
-[GitHub Releases](https://github.com/lingjistudio/moonbox-desktop/releases) as DMG (macOS) and EXE (Windows).
+[GitHub Releases](https://github.com/MoonProxyHQ/moonproxy-desktop/releases) as DMG (macOS) and EXE (Windows).
 
 ### Do I need to install frp separately?
 
-No. Moonbox bundles the frpc binary (currently v0.69.1) via [Tauri's sidecar mechanism](https://tauri.app) — it works out of the box.
+No. MoonProxy bundles the frpc binary (currently v0.69.1) via [Tauri's sidecar mechanism](https://tauri.app) — it works out of the box.
 
-### Is Moonbox open source?
+### Is MoonProxy open source?
 
-Yes. Moonbox is released under the MIT license, with source code and release cadence published on GitHub at [`lingjistudio/moonbox-desktop`](https://github.com/lingjistudio/moonbox-desktop).
+Yes. MoonProxy is released under the MIT license, with source code and release cadence published on GitHub at [`MoonProxyHQ/moonproxy-desktop`](https://github.com/MoonProxyHQ/moonproxy-desktop).
 
 ### What does it add over the raw frp CLI?
 
@@ -113,42 +113,42 @@ automatic frpc engine updates from upstream GitHub Releases (SHA256-verified, at
 
 ### Can I use it without an frps server?
 
-Moonbox only manages the frpc client side — you must supply your own frps server. Common options:
+MoonProxy only manages the frpc client side — you must supply your own frps server. Common options:
 ① self-host a machine with a public IP (a 1 vCPU / 2GB cloud VPS is enough); ② use a community-public frps node
 (evaluate trust and security yourself); ③ deploy a lightweight frps on serverless / cloud functions.
 
-### Is the traffic exposed via Moonbox secure?
+### Is the traffic exposed via MoonProxy secure?
 
-Security is provided by the frp protocol itself: communication uses TCP/TLS or KCP encryption, and authentication tokens are held by you. Moonbox does not store or relay your application data — configs and tokens live only on your machine.
+Security is provided by the frp protocol itself: communication uses TCP/TLS or KCP encryption, and authentication tokens are held by you. MoonProxy does not store or relay your application data — configs and tokens live only on your machine.
 Best practices: ① use a strong per-rule token; ② enable TLS encryption in `frpc.toml` (`transport.tls.force = true`); ③ enable the `allowUsers` whitelist on frps; ④ restrict exposed ports on the public side with a firewall.
 
-### How does Moonbox differ from ZeroTier / Tailscale?
+### How does MoonProxy differ from ZeroTier / Tailscale?
 
 They cover different needs. ZeroTier / Tailscale are full-device mesh VPNs that pull all traffic into a virtual LAN;
-frp (what Moonbox manages) is an on-demand reverse proxy that exposes a single local port to the public internet.
+frp (what MoonProxy manages) is an on-demand reverse proxy that exposes a single local port to the public internet.
 Want to RDP/SSH into every home machine → pick ZeroTier/Tailscale; just want to temporarily expose a NAS, blog, or
-Webhook callback → pick frp + Moonbox. The two can coexist.
+Webhook callback → pick frp + MoonProxy. The two can coexist.
 
 ## Keywords
 
 FRP tunnel · frpc · frps · reverse proxy · NAT traversal · intranet penetration · desktop client · Tauri v2 · Rust ·
-Vue 3 · TypeScript · macOS · Windows · Apple Silicon · cross-platform desktop app · MIT open source · Moonbox · Lingji Studio
+Vue 3 · TypeScript · macOS · Windows · Apple Silicon · cross-platform desktop app · MIT open source · MoonProxy · MoonProxyHQ
 
 ## Install
 
 Pre-built binaries are published on the
-[GitHub Releases page](https://github.com/lingjistudio/moonbox-desktop/releases).
+[GitHub Releases page](https://github.com/MoonProxyHQ/moonproxy-desktop/releases).
 
 | Platform | Download |
 | --- | --- |
-| macOS (Apple Silicon) | `Moonbox-Desktop_<version>_aarch64.dmg` |
-| macOS (Intel) | `Moonbox-Desktop_<version>_x64.dmg` |
-| Windows (x64) | `Moonbox-Desktop_<version>_x64-setup.exe` |
+| macOS (Apple Silicon) | `MoonProxy_<version>_aarch64.dmg` |
+| macOS (Intel) | `MoonProxy_<version>_x64.dmg` |
+| Windows (x64) | `MoonProxy_<version>_x64-setup.exe` |
 
 > **macOS first-launch note:** the app is ad-hoc signed but **not** notarized
 > (no Apple Developer certificate). On first launch, right-click the app →
 > **Open** → confirm in the dialog. Alternatively, after dragging to
-> `/Applications`, run `xattr -cr "/Applications/Moonbox Desktop.app"` to drop
+> `/Applications`, run `xattr -cr "/Applications/月神代理.app"` to drop
 > the quarantine attribute.
 
 ## Build from source
@@ -167,10 +167,10 @@ pnpm tauri build      # production build for current platform
 
 | Resource | Link |
 | --- | --- |
-| 🌐 Official homepage | <https://moonbox.lingjistudio.com> |
-| 📦 Download installers | [GitHub Releases](https://github.com/lingjistudio/moonbox-desktop/releases) |
+| 🌐 Official homepage | <https://moonproxy.app> |
+| 📦 Download installers | [GitHub Releases](https://github.com/MoonProxyHQ/moonproxy-desktop/releases) |
 | 📖 Contributing guide | [CONTRIBUTING.md](./CONTRIBUTING.md) |
-| 💬 Issues & discussions | [GitHub Issues](https://github.com/lingjistudio/moonbox-desktop/issues) · [Discussions](https://github.com/lingjistudio/moonbox-desktop/discussions) |
+| 💬 Issues & discussions | [GitHub Issues](https://github.com/MoonProxyHQ/moonproxy-desktop/issues) · [Discussions](https://github.com/MoonProxyHQ/moonproxy-desktop/discussions) |
 | 🛠 Dev collaboration doc | [AGENTS.md](./AGENTS.md) |
 
 ## License
@@ -181,4 +181,4 @@ pnpm tauri build      # production build for current platform
 
 > This project is independent from [fatedier/frp](https://github.com/fatedier/frp).
 > frp's releases and licensing remain with the upstream project;
-> Moonbox Desktop is a desktop client only.
+> MoonProxy is a desktop client only.

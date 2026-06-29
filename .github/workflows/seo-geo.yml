@@ -65,7 +65,7 @@ jobs:
       - name: 校验 llm.txt 包含必要锚文本
         run: |
           set -e
-          for kw in "Moonbox" "FRP" "Tauri v2" "MIT" "lingjistudio/moonbox-desktop"; do
+          for kw in "MoonProxy" "FRP" "Tauri v2" "MIT" "MoonProxyHQ/moonproxy-desktop"; do
             if ! grep -qi "$kw" llm.txt; then
               echo "::error file=llm.txt::llm.txt 缺少关键词：$kw"
               exit 1
@@ -87,7 +87,7 @@ jobs:
       - name: 校验 README 包含官网与下载链接
         run: |
           set -e
-          for kw in "moonbox.lingjistudio.com" "releases"; do
+          for kw in "moonproxy.app" "releases"; do
             if ! grep -q "$kw" README.md; then
               echo "::error file=README.md::README.md 缺少链接：$kw"
               exit 1

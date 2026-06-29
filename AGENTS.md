@@ -1,4 +1,4 @@
-# Moonbox Desktop
+# MoonProxy
 
 跨平台、面向非技术用户的 [frp](https://github.com/fatedier/frp) 桌面客户端，
 基于 Tauri v2 构建，支持 Windows 与 macOS。
@@ -28,7 +28,7 @@
 ## 目录结构
 
 ```
-moonbox-desktop/
+moonproxy-desktop/
 ├── src/                          # Vue 前端
 │   ├── App.vue                   # 顶层壳：TitleBar + 视图路由 + 全局键盘 / 右键 + 事件订阅
 │   ├── main.ts                   # 挂载入口（按 ?view= 区分主窗 / 日志窗）

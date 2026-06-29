@@ -1,5 +1,5 @@
 name: 🐛 Bug Report
-description: 报告 Moonbox Desktop 的 Bug（崩溃、连接异常、显示错误等）
+description: 报告 MoonProxy 的 Bug（崩溃、连接异常、显示错误等）
 title: "[Bug] "
 labels: ["bug", "needs-triage"]
 assignees: []
@@ -13,7 +13,7 @@ body:
   - type: input
     id: version
     attributes:
-      label: Moonbox Desktop 版本
+      label: MoonProxy 版本
       placeholder: v1.0.0
     validations:
       required: true

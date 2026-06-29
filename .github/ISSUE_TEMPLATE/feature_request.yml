@@ -1,5 +1,5 @@
 name: ✨ Feature Request
-description: 提议新功能或改进（仅面向 Moonbox Desktop 桌面客户端本身，不含 frp 上游特性）
+description: 提议新功能或改进（仅面向 MoonProxy 桌面客户端本身，不含 frp 上游特性）
 title: "[Feature] "
 labels: ["enhancement", "needs-triage"]
 assignees: []
@@ -8,8 +8,8 @@ body:
     attributes:
       value: |
         提交前请先搜索已有 Issue / Discussions，避免重复。
-        本仓库仅跟踪 Moonbox Desktop 桌面客户端的代码与产品需求。
-        通用部署 / 配置问题请去 [Discussions](https://github.com/lingjistudio/moonbox-desktop/discussions)。
+        本仓库仅跟踪 MoonProxy 桌面客户端的代码与产品需求。
+        通用部署 / 配置问题请去 [Discussions](https://github.com/MoonProxyHQ/moonproxy-desktop/discussions)。
 
   - type: textarea
     id: problem

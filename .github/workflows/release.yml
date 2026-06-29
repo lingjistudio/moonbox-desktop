@@ -66,9 +66,9 @@ jobs:
           TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY_PASSWORD }}
         with:
           tagName: ${{ github.ref_name }}
-          releaseName: "Moonbox Desktop ${{ github.ref_name }}"
+          releaseName: "MoonProxy ${{ github.ref_name }}"
           releaseBody: "Release ${{ github.ref_name }}"
           releaseDraft: false
           prerelease: false
-          assetNamePattern: "MoonboxDesktop_[version]_[arch][setup][ext]"
+          assetNamePattern: "MoonProxy_[version]_[arch][setup][ext]"
           args: ${{ matrix.args }}

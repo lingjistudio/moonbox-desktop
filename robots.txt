@@ -1,4 +1,4 @@
-# robots.txt for lingjistudio/moonbox-desktop (GitHub-hosted repo)
+# robots.txt for MoonProxyHQ/moonproxy-desktop (GitHub-hosted repo)
 # GitHub serves the rendered README and repo pages to crawlers.
 
 # Allow general indexing of the public repository surface.
@@ -24,4 +24,4 @@ Allow: /
 
 # XML sitemap (GitHub does not auto-generate one for repos; pointing at the
 # product homepage sitemap instead, which describes the project too).
-Sitemap: https://moonbox.lingjistudio.com/sitemap.xml
+Sitemap: https://moonproxy.app/sitemap.xml

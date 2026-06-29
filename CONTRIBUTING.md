@@ -1,6 +1,6 @@
 # 贡献指南
 
-感谢你对 Moonbox Desktop 的关注！本文档说明如何本地搭建开发环境，以及如何参与贡献。
+感谢你对 MoonProxy 的关注！本文档说明如何本地搭建开发环境，以及如何参与贡献。
 
 ## 一、本地开发环境
 
@@ -19,8 +19,8 @@ macOS 还需 Xcode Command Line Tools；Windows 需 Visual Studio C++ Build Tool
 ### 1.2 首次启动
 
 ```bash
-git clone https://github.com/lingjistudio/moonbox-desktop.git
-cd moonbox-desktop
+git clone https://github.com/MoonProxyHQ/moonproxy-desktop.git
+cd moonproxy-desktop
 pnpm install
 pnpm sync:frpc            # 下载当前平台的 frpc sidecar
 pnpm tauri dev            # 启动联调
@@ -123,7 +123,7 @@ git push origin main vx.y.z
 如需轮换签名密钥：
 
 ```bash
-pnpm tauri signer generate -w ~/.tauri/moonbox-desktop.key
+pnpm tauri signer generate -w ~/.tauri/moonproxy-desktop.key
 # 把生成的公钥贴到 src-tauri/tauri.conf.json 的 plugins.updater.pubkey
 # 把私钥作为 GitHub Secret 配置到仓库设置 → Secrets and variables → Actions
 ```

@@ -1,8 +1,8 @@
 {
   "$schema": "https://schema.tauri.app/config/2",
-  "productName": "灵机魔盒",
+  "productName": "月神代理",
   "version": "1.0.1",
-  "identifier": "com.lingjistudio.moonbox",
+  "identifier": "app.moonproxy",
   "build": {
     "beforeDevCommand": "pnpm dev",
     "devUrl": "http://localhost:1420",
@@ -12,7 +12,7 @@
   "app": {
     "windows": [
       {
-        "title": "灵机魔盒",
+        "title": "月神代理",
         "width": 400,
         "height": 740,
         "resizable": false,
@@ -31,7 +31,7 @@
   "plugins": {
     "updater": {
       "endpoints": [
-        "https://github.com/lingjistudio/moonbox-desktop/releases/latest/download/latest.json"
+        "https://github.com/MoonProxyHQ/moonproxy-desktop/releases/latest/download/latest.json"
       ],
       "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IEZBOUNDQTkwRDZERUQ2MkMKUldRczF0N1drTXFjK3NxZEtIQjd0cGdtcFhDOHprTUhwckpUbGNybTJSZWU0aDZaSkNFUCt1Qi8K"
     }

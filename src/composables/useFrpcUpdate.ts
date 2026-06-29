@@ -26,11 +26,11 @@ export const downloading = ref(false);
 export async function initFrpcVersion(): Promise<void> {
   try {
     const v = await invoke<string>("get_frpc_version");
-    const prev = localStorage.getItem("moonbox.frpcVersion");
+    const prev = localStorage.getItem("moonproxy.frpcVersion");
     if (prev && prev !== v) {
       recentlyApplied.value = v;
     }
-    localStorage.setItem("moonbox.frpcVersion", v);
+    localStorage.setItem("moonproxy.frpcVersion", v);
     frpcVersion.value = v;
   } catch {
     /* ignore */

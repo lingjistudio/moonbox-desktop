@@ -1,7 +1,7 @@
 /* TEAM */
 
-Developer: Lingji Studio (灵机工作室)
-Site: https://github.com/lingjistudio
+Developer: MoonProxyHQ
+Site: https://github.com/MoonProxyHQ
 Location: China
 
 /* THANKS */
@@ -13,4 +13,4 @@ Tauri (framework): https://tauri.app
 
 Standards: HTML, CSS, Vue 3, Rust, TypeScript
 Components: Tauri v2, Vue 3, Vite
-Software: Moonbox Desktop
+Software: MoonProxy

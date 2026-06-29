@@ -184,7 +184,7 @@ fn has_running_proxy(body: &serde_json::Value) -> bool {
 /// 给 frpc 一个 30s 自愈窗口；超过 30s 仍未恢复则升级为 Error。
 pub async fn poll_conn_state(app: AppHandle) {
     let client = match reqwest::Client::builder()
-        .user_agent("Moonbox/0.1 (frpc-state)")
+        .user_agent("MoonProxy/0.1 (frpc-state)")
         .timeout(Duration::from_secs(2))
         .build()
     {

@@ -10,7 +10,7 @@ export default {
   common_copy: "Copy",
 
   // App / title
-  app_name: "灵机魔盒",
+  app_name: "MoonProxy",
   settings_view_title: "Settings",
 
   // Settings tabs
@@ -128,8 +128,8 @@ export default {
   // Launch tab
   launch_section: "Launch",
   launch_auto_launch: "Auto-launch on login",
-  launch_auto_launch_on_desc: "Enabled: 灵机魔盒 starts automatically when you log in.",
-  launch_auto_launch_off_desc: "Disabled: 灵机魔盒 will not start with the system.",
+  launch_auto_launch_on_desc: "Enabled: MoonProxy starts automatically when you log in.",
+  launch_auto_launch_off_desc: "Disabled: MoonProxy will not start with the system.",
   launch_silent_start: "Start minimized to tray",
   launch_silent_start_on_desc: "Enabled: when auto-launched, the app starts hidden in the system tray.",
   launch_silent_start_off_desc: "Disabled: when auto-launched, the app opens normally.",
@@ -169,8 +169,8 @@ export default {
   about_label_app_name: "Application",
   about_label_homepage: "Homepage",
   about_label_maintainer: "Maintained by",
-  about_value_app_name: "Moonbox Desktop",
-  about_value_maintainer: "Lingji Studio",
+  about_value_app_name: "MoonProxy",
+  about_value_maintainer: "MoonProxyHQ",
   updates_label_current_version: "Current",
   updates_label_latest_version: "Latest",
   updates_label_downloaded: "Downloaded",
@@ -192,7 +192,7 @@ export default {
   logs_empty: "No runtime logs yet",
 
   // Close confirmation dialog
-  close_confirm_title: "灵机魔盒 is running",
+  close_confirm_title: "MoonProxy is running",
   close_confirm_body: "Closing will disconnect all active proxies. You can Minimize to keep it running in the background, or Exit to stop it completely.",
   close_confirm_minimize: "Minimize",
   close_confirm_exit: "Exit",

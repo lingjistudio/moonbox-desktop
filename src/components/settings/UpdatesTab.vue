@@ -27,7 +27,7 @@ import Toast from "../Toast.vue";
 const { t: $t } = useI18n();
 const { toast, showToast } = useToast();
 
-const HOMEPAGE_URL = "https://moonbox.lingjistudio.com";
+const HOMEPAGE_URL = "https://moonproxy.app";
 
 async function openHomepage() {
   try {

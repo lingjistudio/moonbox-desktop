@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-图标规范校验脚本 —— Moonbox Desktop
+图标规范校验脚本 —— MoonProxy
 
 校验范围（默认根目录 docs/app-icons/）：
   - 系统托盘图标（macOS / Windows）—— 尺寸、纯色、4 角透明（无背板）
@@ -240,7 +240,7 @@ def check_app_icon(path: Path, expected_size: Optional[tuple[int, int]], report:
 
 def main() -> int:
     parser = argparse.ArgumentParser(
-        description="校验 Moonbox Desktop 的托盘图标与 APP Icon 是否符合平台规范。",
+        description="校验 MoonProxy 的托盘图标与 APP Icon 是否符合平台规范。",
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog="详细规范见 docs/app-icons/README.md 或 scripts/check-icons.py 文件头注释。",
     )

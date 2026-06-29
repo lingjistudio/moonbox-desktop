@@ -13,7 +13,7 @@ use tauri::{
 
 pub fn init_tray(app: &AppHandle) -> tauri::Result<()> {
     let show_item = MenuItem::with_id(app, "tray_show", "显示主窗口", true, None::<&str>)?;
-    let quit_item = MenuItem::with_id(app, "tray_quit", "退出灵机魔盒", true, None::<&str>)?;
+    let quit_item = MenuItem::with_id(app, "tray_quit", "退出月神代理", true, None::<&str>)?;
     let menu = Menu::with_items(app, &[&show_item, &quit_item])?;
 
     #[cfg(target_os = "macos")]
@@ -28,7 +28,7 @@ pub fn init_tray(app: &AppHandle) -> tauri::Result<()> {
     TrayIconBuilder::with_id("main-tray")
         .icon(tray_icon)
         .icon_as_template(cfg!(target_os = "macos"))
-        .tooltip("灵机魔盒")
+        .tooltip("月神代理")
         .menu(&menu)
         .show_menu_on_left_click(false)
         .on_menu_event(|app, event| match event.id.as_ref() {

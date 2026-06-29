@@ -1,4 +1,4 @@
-# 后端开发指南（Moonbox Desktop）
+# 后端开发指南（MoonProxy）
 
 > 本文件面向在该目录（`src-tauri/`）下做后端 / 命令 / 进程管理开发的工程师。
 > 涉及前后端协议的部分给出对应前端调用点的引用，便于一眼对齐。
@@ -18,7 +18,7 @@
 
 ```
 src-tauri/
-├── Cargo.toml                # crate = moonbox-desktop；lib + bin（cdylib/staticlib/rlib）
+├── Cargo.toml                # crate = moonproxy-desktop；lib + bin（cdylib/staticlib/rlib）
 ├── build.rs                  # tauri_build::build() 入口
 ├── tauri.conf.json           # 主配置：窗口 400×740、无装饰、sidecar 声明、updater 端点
 ├── tauri.macos.conf.json     # macOS 平台覆盖：开系统交通灯 + hiddenTitle + Overlay

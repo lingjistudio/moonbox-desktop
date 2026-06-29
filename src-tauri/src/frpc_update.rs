@@ -134,7 +134,7 @@ fn asset_urls(version: &str) -> Result<(String, String, String), String> {
 fn build_http_client() -> Result<reqwest::Client, String> {
     reqwest::Client::builder()
         .user_agent(format!(
-            "Moonbox-Desktop/{} (frpc-updater)",
+            "MoonProxy/{} (frpc-updater)",
             env!("CARGO_PKG_VERSION")
         ))
         .build()

@@ -8,7 +8,7 @@ GitHub 在分享仓库链接到社交媒体 / 聊天工具时，会展示一张 
 文件名固定为 `social-preview.png`，放在仓库**根目录**：
 
 ```
-moonbox-desktop/
+moonproxy-desktop/
 └── social-preview.png   ← 1200×630，≤ 1MB，PNG / JPG
 ```
 
@@ -18,11 +18,11 @@ moonbox-desktop/
 
 - 尺寸：**1280×640**（GitHub 推荐）/ 1200×630（社交媒体通用）
 - 内容：
-  - 品牌名：**灵机魔盒（Moonbox）**
+  - 品牌名：**月神代理（MoonProxy）**
   - 一句话定位：跨平台 FRP 内网穿透桌面客户端
   - 平台标识：macOS · Windows
   - 技术栈角标（可选）：Tauri v2 · Rust · Vue
-- 色调：与官网 `moonbox.lingjistudio.com` 保持一致（主色 `#2563eb`）
+- 色调：与官网 `moonproxy.app` 保持一致（主色 `#2563eb`）
 - 不要放：截图全屏（社交媒体会裁切）、过多文字、敏感信息
 
 ## 设计资源

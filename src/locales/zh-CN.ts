@@ -10,7 +10,7 @@ export default {
   common_copy: "复制",
 
   // 应用名 / 标题
-  app_name: "灵机魔盒",
+  app_name: "月神代理",
   settings_view_title: "系统设置",
 
   // 设置面板 Tab
@@ -128,7 +128,7 @@ export default {
   // 启动 Tab
   launch_section: "启动",
   launch_auto_launch: "开机启动",
-  launch_auto_launch_on_desc: "已开启：登录系统后将自动启动灵机魔盒。",
+  launch_auto_launch_on_desc: "已开启：登录系统后将自动启动月神代理。",
   launch_auto_launch_off_desc: "已关闭：不会随系统自动启动。",
   launch_silent_start: "静默启动",
   launch_silent_start_on_desc: "已开启：开机自启时，应用以隐藏状态启动到系统托盘。",
@@ -169,8 +169,8 @@ export default {
   about_label_app_name: "应用名称",
   about_label_homepage: "官方网站",
   about_label_maintainer: "维护团队",
-  about_value_app_name: "灵机魔盒 (Moonbox Desktop)",
-  about_value_maintainer: "灵机工作室",
+  about_value_app_name: "月神代理 (MoonProxy)",
+  about_value_maintainer: "MoonProxyHQ",
   updates_label_current_version: "当前版本",
   updates_label_latest_version: "最新版本",
   updates_label_downloaded: "已下载",
@@ -192,7 +192,7 @@ export default {
   logs_empty: "暂无运行日志",
 
   // 关闭确认弹窗
-  close_confirm_title: "灵机魔盒正在运行",
+  close_confirm_title: "月神代理正在运行",
   close_confirm_body: "关闭后将断开全部代理穿透连接。可选择「最小化」保持后台运行，或「退出」彻底停止服务。",
   close_confirm_minimize: "最小化",
   close_confirm_exit: "退出",
