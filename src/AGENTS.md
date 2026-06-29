@@ -46,7 +46,7 @@ src/
 │   ├── CloseConfirm.vue          # frpc 运行时的关闭确认弹窗（最小化 / 退出）
 │   ├── Toast.vue                 # 顶部 Toast 渲染
 │   ├── home/                     # HomeView 拆出的子组件（详见 §5.4）
-│   │   ├── CircleButton.vue      # 大圆按钮 + Canvas 波纹粒子系统 + 4 态文案
+│   │   ├── ControlBar.vue       # 顶部横向控制条：80×80 小圆按钮 + CSS 呼吸光晕 + 4 态文案 + 右槽齿轮
 │   │   ├── ProxyList.vue         # 公网访问地址列表 + 健康点 + 复制按钮 + 3s 健康轮询
 │   │   ├── GuideCard.vue         # 未配置引导卡片
 │   │   └── SystemStatus.vue      # 底部只读系统状态栏（开机启动 / 定时连接）
@@ -60,7 +60,7 @@ src/
 │       ├── ScheduleSection.vue   # 定时连接：主开关 + 星期选择 + 起止时间 + 校验 + 保存
 │       └── UpdatesTab.vue
 └── views/
-    ├── HomeView.vue              # 主面板：纯组装（CircleButton + GuideCard + ProxyList + SystemStatus + 设置齿轮 + 错误条 + 启停逻辑）
+    ├── HomeView.vue              # 主面板：纯组装（ControlBar + GuideCard + ProxyList + SystemStatus + 错误条 + 启停逻辑）
     ├── SettingsView.vue          # 设置面板：分段控件 + Tab 切换（日志入口上移到 TitleBar）
     └── LogsWindow.vue            # 独立日志窗口根组件：get_logs 拉历史 + listen 实时；不复用 App.vue 的关闭/快捷键逻辑
 ```
@@ -285,7 +285,7 @@ HomeView 本身是纯组装壳层，所有"实时"职责拆到 `components/home/
 
 | 子件 | 职责 |
 | --- | --- |
-| `CircleButton.vue` | 大圆按钮 + Canvas 波纹粒子系统（`useParticles(frpcStatus)`）+ 4 态文案；只 emit `click`，启停逻辑由 `HomeView.vue` 处理 |
+| `ControlBar.vue` | 顶部横向控制条（~96px）：80×80 小圆按钮 + CSS 呼吸光晕（取代 Canvas 粒子，connected 3s 绿呼吸 / connecting 1s 黄脉冲）+ 4 态双行文案 + 右槽齿轮按钮；emit `click` 与 `settings`，启停与跳转逻辑由 `HomeView.vue` 处理 |
 | `ProxyList.vue` | 公网访问地址列表 + 健康点 + 复制按钮 + 3s 健康轮询（自管理 onMounted/onUnmounted）；按代理类型分支生成地址：`http`/`https` → `${type}://${custom_domains[0]}`（未配域名时回退到 name 占位），`tcp`/`udp` → `${server_addr}:${remote_port}`；点击地址复制到剪贴板（`navigator.clipboard?.writeText`，失败静默） |
 | `GuideCard.vue` | 未配置引导卡片；emit `settings` |
 | `SystemStatus.vue` | 底部只读系统状态栏：开机启动状态 + 定时连接摘要 |

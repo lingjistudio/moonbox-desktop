@@ -1,17 +1,16 @@
 <script setup lang="ts">
 import { computed } from "vue";
 import { useI18n } from "vue-i18n";
+import { Settings } from "@lucide/vue";
 
 import { frpcStatus } from "../../state/runtime";
 import type { FrpcStatus } from "../../types";
-import { useParticles } from "../../composables/useParticles";
 
 defineProps<{ disabled: boolean }>();
-defineEmits<{ click: [] }>();
+defineEmits<{ click: []; settings: [] }>();
 
 const { t: $t } = useI18n();
 
-/** 圆形按钮的 CSS 类名后缀，与 styles.css 中 .toggle-* 对应 */
 const STATUS_KEYS: Record<FrpcStatus, { label: string; hint: string; aria: string }> = {
   stopped:    { label: "home_btn_stopped",    hint: "home_btn_hint_stopped",    aria: "home_btn_aria_stopped" },
   connecting: { label: "home_btn_connecting", hint: "home_btn_hint_connecting", aria: "home_btn_aria_connecting" },
@@ -21,22 +20,18 @@ const STATUS_KEYS: Record<FrpcStatus, { label: string; hint: string; aria: strin
 
 const buttonClass = computed(() => `toggle-${frpcStatus.value}`);
 const statusLabel = computed(() => $t(STATUS_KEYS[frpcStatus.value].label));
-const statusHint = computed(() => $t(STATUS_KEYS[frpcStatus.value].hint));
-const toggleAria = computed(() => $t(STATUS_KEYS[frpcStatus.value].aria));
-
-/** Canvas 波纹粒子系统（connected 中心扩散 / connecting 外圈波动） */
-const { canvas: particleCanvas } = useParticles(frpcStatus);
+const statusHint  = computed(() => $t(STATUS_KEYS[frpcStatus.value].hint));
+const toggleAria  = computed(() => $t(STATUS_KEYS[frpcStatus.value].aria));
 </script>
 
 <template>
-  <section class="control-section">
-    <div class="ripple-wrapper">
-      <canvas ref="particleCanvas" class="particle-canvas"></canvas>
+  <section class="control-bar">
+    <div class="control-main">
       <button
-        class="big-toggle"
+        class="ripple-circle"
         :class="buttonClass"
-        :aria-label="toggleAria"
         :disabled="disabled"
+        :aria-label="toggleAria"
         @click="$emit('click')"
       >
         <svg
@@ -44,8 +39,8 @@ const { canvas: particleCanvas } = useParticles(frpcStatus);
           xmlns="http://www.w3.org/2000/svg"
           viewBox="0 0 256 256"
           fill="none"
-          width="46"
-          height="46"
+          width="26"
+          height="26"
           aria-hidden="true"
         >
           <path d="M128.15 15.4738C133.798 15.4738 138.377 20.0527 138.377 25.7012L138.377 66.6096C138.377 72.2581 133.798 76.837 128.15 76.837C122.502 76.837 117.923 72.2581 117.923 66.6096L117.923 25.7012C117.923 20.0527 122.502 15.4738 128.15 15.4738Z" fill="currentColor"/>
@@ -59,82 +54,121 @@ const { canvas: particleCanvas } = useParticles(frpcStatus);
           <ellipse cx="150.881" cy="128.095" rx="18.592" ry="18.485" fill="currentColor"/>
           <ellipse cx="105.522" cy="128.095" rx="18.592" ry="18.485" fill="currentColor"/>
         </svg>
-        <span class="toggle-label">{{ statusLabel }}</span>
-        <span class="toggle-hint">{{ statusHint }}</span>
       </button>
+      <div class="control-text">
+        <div class="control-label">{{ statusLabel }}</div>
+        <div class="control-hint">{{ statusHint }}</div>
+      </div>
     </div>
+    <button
+      class="control-settings-btn"
+      @click="$emit('settings')"
+      :title="$t('home_settings_title')"
+      :aria-label="$t('home_settings_title')"
+    >
+      <Settings :size="18" />
+    </button>
   </section>
 </template>
 
 <style scoped>
-.control-section {
+.control-bar {
   display: flex;
   align-items: center;
-  justify-content: center;
-  padding: 28px 0 12px;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px 14px;
   flex-shrink: 0;
 }
-.ripple-wrapper {
-  position: relative;
-  width: 360px;
-  height: 360px;
+
+.control-main {
   display: flex;
   align-items: center;
-  justify-content: center;
-}
-/* Canvas 波纹覆盖整个 wrapper（360×360，留出按钮外足够扩散空间） */
-.particle-canvas {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  pointer-events: none;
+  gap: 12px;
+  flex: 1;
+  min-width: 0;
 }
 
-.big-toggle {
-  position: relative;
-  z-index: 1;
-  width: 160px;
-  height: 160px;
+.ripple-circle {
+  flex-shrink: 0;
+  width: 80px;
+  height: 80px;
   border-radius: 50%;
   border: none;
   display: flex;
-  flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 4px;
   cursor: pointer;
   transition: opacity 0.15s, filter 0.15s;
-  font-weight: 600;
-  color: hsl(var(--primary-foreground));
   font-family: inherit;
+  color: hsl(var(--primary-foreground));
 }
-/* 三态 + 错误态：单色语义色，互不相同便于一眼区分 */
+.ripple-circle:hover:not(:disabled) {
+  filter: brightness(1.08);
+}
+.ripple-circle:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
 .toggle-stopped    { background: hsl(var(--muted-foreground)); }
 .toggle-connecting { background: hsl(var(--warning)); }
 .toggle-connected  { background: hsl(var(--success)); }
 .toggle-error      { background: hsl(var(--destructive)); }
 
-.big-toggle:hover:not(:disabled) {
-  filter: brightness(1.08);
+.toggle-connected {
+  animation: glow-pulse-success 3s ease-in-out infinite;
 }
-.big-toggle:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
+.toggle-connecting {
+  animation: glow-pulse-warning 1s ease-in-out infinite;
 }
+
+@keyframes glow-pulse-success {
+  0%, 100% { box-shadow: 0 0 0 0 hsl(var(--success) / 0.5); }
+  50%      { box-shadow: 0 0 0 12px hsl(var(--success) / 0); }
+}
+@keyframes glow-pulse-warning {
+  0%, 100% { box-shadow: 0 0 0 0 hsl(var(--warning) / 0.6); }
+  50%      { box-shadow: 0 0 0 8px hsl(var(--warning) / 0); }
+}
+
 .toggle-icon {
-  margin-bottom: 2px;
   color: inherit;
 }
-.toggle-label {
-  font-size: 16px;
-  font-weight: 700;
-  letter-spacing: 0.5px;
+
+.control-text {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
 }
-.toggle-hint {
+.control-label {
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.3px;
+}
+.control-hint {
   font-size: 11px;
   font-weight: 500;
-  opacity: 0.85;
+  color: hsl(var(--muted-foreground));
   margin-top: 1px;
+}
+
+.control-settings-btn {
+  flex-shrink: 0;
+  width: 30px;
+  height: 30px;
+  border-radius: 6px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: none;
+  color: hsl(var(--muted-foreground));
+  cursor: pointer;
+  transition: background-color 0.15s, color 0.15s;
+}
+.control-settings-btn:hover {
+  background: hsl(var(--accent));
+  color: hsl(var(--foreground));
 }
 </style>
