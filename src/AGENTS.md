@@ -46,7 +46,7 @@ src/
 │   ├── CloseConfirm.vue          # frpc 运行时的关闭确认弹窗（最小化 / 退出）
 │   ├── Toast.vue                 # 顶部 Toast 渲染
 │   ├── home/                     # HomeView 拆出的子组件（详见 §5.4）
-│   │   ├── ControlBar.vue       # 顶部横向控制条：80×80 小圆按钮 + CSS 呼吸光晕 + 4 态双行文案；齿轮由 HomeView 浮动承担
+│   │   ├── ControlBar.vue       # 顶部横向控制条：胶囊状状态按钮（图标+主标）+ 副提示；齿轮由 HomeView 浮动承担
 │   │   ├── ProxyList.vue         # 公网访问地址列表 + 健康点 + 复制按钮 + 3s 健康轮询
 │   │   ├── GuideCard.vue         # 未配置引导卡片
 │   │   └── SystemStatus.vue      # 底部只读系统状态栏（开机启动 / 定时连接）
@@ -285,7 +285,7 @@ HomeView 本身是纯组装壳层，所有"实时"职责拆到 `components/home/
 
 | 子件 | 职责 |
 | --- | --- |
-| `ControlBar.vue` | 顶部横向控制条（~96px）：80×80 小圆按钮 + CSS 呼吸光晕（取代 Canvas 粒子，connected 3s 绿呼吸 / connecting 1s 黄脉冲）+ 4 态双行文案；只 emit `click`，启停逻辑由 `HomeView.vue` 处理；齿轮由 HomeView 顶部浮动按钮承担（与 ControlBar 上下分离） |
+| `ControlBar.vue` | 顶部横向控制条（~56px）：胶囊状状态按钮（高 36px，图标 + 主标，4 态语义色 + CSS 呼吸光晕 connected 3s 绿 / connecting 1s 黄）+ 右侧外置副提示；只 emit `click`，启停逻辑由 `HomeView.vue` 处理；齿轮由 HomeView 顶部浮动按钮承担（与 ControlBar 上下分离） |
 | `ProxyList.vue` | 公网访问地址列表 + 健康点 + 复制按钮 + 3s 健康轮询（自管理 onMounted/onUnmounted）；按代理类型分支生成地址：`http`/`https` → `${type}://${custom_domains[0]}`（未配域名时回退到 name 占位），`tcp`/`udp` → `${server_addr}:${remote_port}`；点击地址复制到剪贴板（`navigator.clipboard?.writeText`，失败静默） |
 | `GuideCard.vue` | 未配置引导卡片；emit `settings` |
 | `SystemStatus.vue` | 底部只读系统状态栏：开机启动状态 + 定时连接摘要 |

@@ -26,19 +26,19 @@ const toggleAria  = computed(() => $t(STATUS_KEYS[frpcStatus.value].aria));
 <template>
   <section class="control-bar">
     <button
-      class="ripple-circle"
+      class="status-pill"
       :class="buttonClass"
       :disabled="disabled"
       :aria-label="toggleAria"
       @click="$emit('click')"
     >
       <svg
-        class="toggle-icon"
+        class="pill-icon"
         xmlns="http://www.w3.org/2000/svg"
         viewBox="0 0 256 256"
         fill="none"
-        width="26"
-        height="26"
+        width="18"
+        height="18"
         aria-hidden="true"
       >
         <path d="M128.15 15.4738C133.798 15.4738 138.377 20.0527 138.377 25.7012L138.377 66.6096C138.377 72.2581 133.798 76.837 128.15 76.837C122.502 76.837 117.923 72.2581 117.923 66.6096L117.923 25.7012C117.923 20.0527 122.502 15.4738 128.15 15.4738Z" fill="currentColor"/>
@@ -52,11 +52,9 @@ const toggleAria  = computed(() => $t(STATUS_KEYS[frpcStatus.value].aria));
         <ellipse cx="150.881" cy="128.095" rx="18.592" ry="18.485" fill="currentColor"/>
         <ellipse cx="105.522" cy="128.095" rx="18.592" ry="18.485" fill="currentColor"/>
       </svg>
+      <span class="pill-label">{{ statusLabel }}</span>
     </button>
-    <div class="control-text">
-      <div class="control-label">{{ statusLabel }}</div>
-      <div class="control-hint">{{ statusHint }}</div>
-    </div>
+    <span class="control-hint">{{ statusHint }}</span>
   </section>
 </template>
 
@@ -64,29 +62,32 @@ const toggleAria  = computed(() => $t(STATUS_KEYS[frpcStatus.value].aria));
 .control-bar {
   display: flex;
   align-items: center;
-  gap: 12px;
-  padding: 12px 50px 12px 14px;
+  gap: 10px;
+  padding: 10px 50px 10px 14px;
   flex-shrink: 0;
 }
 
-.ripple-circle {
+.status-pill {
   flex-shrink: 0;
-  width: 80px;
-  height: 80px;
-  border-radius: 50%;
+  height: 36px;
+  padding: 0 14px 0 12px;
+  border-radius: 18px;
   border: none;
-  display: flex;
+  display: inline-flex;
   align-items: center;
-  justify-content: center;
+  gap: 8px;
   cursor: pointer;
   transition: opacity 0.15s, filter 0.15s;
   font-family: inherit;
   color: hsl(var(--primary-foreground));
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.3px;
 }
-.ripple-circle:hover:not(:disabled) {
+.status-pill:hover:not(:disabled) {
   filter: brightness(1.08);
 }
-.ripple-circle:disabled {
+.status-pill:disabled {
   opacity: 0.5;
   cursor: not-allowed;
 }
@@ -105,31 +106,25 @@ const toggleAria  = computed(() => $t(STATUS_KEYS[frpcStatus.value].aria));
 
 @keyframes glow-pulse-success {
   0%, 100% { box-shadow: 0 0 0 0 hsl(var(--success) / 0.5); }
-  50%      { box-shadow: 0 0 0 12px hsl(var(--success) / 0); }
+  50%      { box-shadow: 0 0 0 10px hsl(var(--success) / 0); }
 }
 @keyframes glow-pulse-warning {
   0%, 100% { box-shadow: 0 0 0 0 hsl(var(--warning) / 0.6); }
-  50%      { box-shadow: 0 0 0 8px hsl(var(--warning) / 0); }
+  50%      { box-shadow: 0 0 0 6px hsl(var(--warning) / 0); }
 }
 
-.toggle-icon {
+.pill-icon {
   color: inherit;
+  flex-shrink: 0;
 }
 
-.control-text {
-  display: flex;
-  flex-direction: column;
-  min-width: 0;
-}
-.control-label {
-  font-size: 14px;
-  font-weight: 700;
-  letter-spacing: 0.3px;
-}
 .control-hint {
   font-size: 11px;
   font-weight: 500;
   color: hsl(var(--muted-foreground));
-  margin-top: 1px;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 </style>
