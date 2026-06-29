@@ -1,5 +1,7 @@
 <script setup lang="ts">
 import { ref } from "vue";
+import { useI18n } from "vue-i18n";
+import { Settings } from "@lucide/vue";
 
 import { config, isConfigured, frpcStatus } from "../state";
 import { startFrpc, stopFrpc } from "../commands/frpc";
@@ -8,6 +10,7 @@ import ProxyList from "../components/home/ProxyList.vue";
 import GuideCard from "../components/home/GuideCard.vue";
 import SystemStatus from "../components/home/SystemStatus.vue";
 
+const { t: $t } = useI18n();
 const emit = defineEmits<{ settings: [] }>();
 
 const error = ref("");
@@ -31,11 +34,15 @@ async function onToggle() {
 
 <template>
   <div class="home-view">
-    <ControlBar
-      :disabled="!isConfigured()"
-      @click="onToggle"
-      @settings="emit('settings')"
-    />
+    <button
+      class="home-settings-btn"
+      @click="emit('settings')"
+      :title="$t('home_settings_title')"
+      :aria-label="$t('home_settings_title')"
+    >
+      <Settings :size="18" />
+    </button>
+    <ControlBar :disabled="!isConfigured()" @click="onToggle" />
     <div class="home-body">
       <GuideCard v-if="!isConfigured()" @settings="emit('settings')" />
       <ProxyList
@@ -54,6 +61,30 @@ async function onToggle() {
   flex-direction: column;
   flex: 1;
   min-height: 0;
+  position: relative;
+}
+
+/* 系统设置齿轮：浮动在主页右上角，与下方 ControlBar 视觉分两行 */
+.home-settings-btn {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  z-index: 5;
+  width: 30px;
+  height: 30px;
+  border-radius: 6px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: none;
+  color: hsl(var(--muted-foreground));
+  cursor: pointer;
+  transition: background-color 0.15s, color 0.15s;
+}
+.home-settings-btn:hover {
+  background: hsl(var(--accent));
+  color: hsl(var(--foreground));
 }
 
 .home-body {
