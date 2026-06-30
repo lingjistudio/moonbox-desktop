@@ -60,8 +60,7 @@ src/
 │       ├── LaunchTab.vue         # 开机启动 / 静默启动 / 开机自动连接（ScheduleSection 抽出独立子件）
 │       ├── ScheduleSection.vue   # 定时连接：主开关 + 星期选择 + 起止时间 + 校验 + 保存
 │       ├── LogsTab.vue           # 运行日志
-│       ├── AboutTab.vue          # 关于
-│       └── UpdatesTab.vue
+│       └── AboutTab.vue          # 关于（含软件更新 + 核心引擎）
 └── views/
     ├── HomeView.vue              # 主面板：纯组装（CircleButton + GuideCard + ProxyList + SystemStatus + 错误条 + 启停逻辑）
     ├── SettingsView.vue          # 设置面板：分段控件 + Tab 切换
@@ -276,7 +275,7 @@ if (err) showToast(err, "error");
 
 ### 5.2 编辑副本模式
 
-`SettingsView` 下各 Tab（`ProviderTab` / `ProxyTab` / `InterfaceTab` / `LaunchTab` / `LogsTab` / `AboutTab` / `UpdatesTab`）
+`SettingsView` 下各 Tab（`ProviderTab` / `ProxyTab` / `InterfaceTab` / `LaunchTab` / `LogsTab` / `AboutTab`）
 统一约定：表单绑定本地 `form` 副本，**保存时才写回 `config` / `prefs`**。
 这样用户中途取消不会污染 store，也避免每次输入触发后端写入。
 

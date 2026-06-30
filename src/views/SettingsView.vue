@@ -3,20 +3,18 @@ import { ref } from "vue";
 import { useI18n } from "vue-i18n";
 import InterfaceTab from "../components/settings/InterfaceTab.vue";
 import LaunchTab from "../components/settings/LaunchTab.vue";
-import UpdatesTab from "../components/settings/UpdatesTab.vue";
 import LogsTab from "../components/settings/LogsTab.vue";
 import AboutTab from "../components/settings/AboutTab.vue";
 
 defineEmits<{ back: [] }>();
 
-type TabKey = "interface" | "launch" | "updates" | "logs" | "about";
+type TabKey = "interface" | "launch" | "logs" | "about";
 
 const { t: $t } = useI18n();
 
 const tabs: { key: TabKey; labelKey: string }[] = [
   { key: "launch", labelKey: "settings_tab_launch" },
   { key: "interface", labelKey: "settings_tab_interface" },
-  { key: "updates", labelKey: "settings_tab_updates" },
   { key: "logs", labelKey: "settings_tab_logs" },
   { key: "about", labelKey: "settings_tab_about" },
 ];
@@ -43,7 +41,6 @@ const activeTab = ref<TabKey>("launch");
     <div class="settings-body">
       <LaunchTab v-if="activeTab === 'launch'" />
       <InterfaceTab v-else-if="activeTab === 'interface'" />
-      <UpdatesTab v-else-if="activeTab === 'updates'" />
       <LogsTab v-else-if="activeTab === 'logs'" />
       <AboutTab v-else-if="activeTab === 'about'" />
     </div>

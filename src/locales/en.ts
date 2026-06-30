@@ -19,7 +19,6 @@ export default {
   settings_tab_proxy: "Proxies",
   settings_tab_interface: "Interface",
   settings_tab_launch: "Launch",
-  settings_tab_updates: "Updates",
   settings_tab_logs: "Logs",
   settings_tab_about: "About",
 

@@ -54,7 +54,7 @@ moonproxy-desktop/
 │   │       ├── LaunchTab.vue     # 开机启动 / 静默启动 / 开机自动连接
 │   │       ├── ScheduleSection.vue  # 定时连接（LaunchTab 内嵌）
 │   │       ├── LogsTab.vue       # 运行日志
-│   │       └── UpdatesTab.vue    # 软件更新 + 引擎更新
+│   │       └── AboutTab.vue      # 关于（含软件更新 + 核心引擎）
 │   └── views/
 │       ├── HomeView.vue          # 主面板：4 态大圆按钮 / 端点列表 / 引导卡片
 │       └── SettingsView.vue      # 设置面板：分段控件 + Tab 切换
