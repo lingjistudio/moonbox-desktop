@@ -6,7 +6,7 @@
 ## 1. 技术栈
 
 - **框架**：Tauri v2（`tauri = "2"` + `wry` + `tray-icon` + `image-png/ico` + `devtools`）
-- **异步**：`tauri::async_runtime`（背后为 tokio）
+- **异步**：`tauri::async_runtime`（背后为 tokio）；流量中转层（`proxy_relay`）直接用 `tokio` 的 `net` / `sync::Mutex` / `select!`
 - **HTTP**：`reqwest 0.12`（`rustls-tls`，禁用 `default-features` 避免 OpenSSL）
 - **序列化**：`serde` / `serde_json`；TOML 配置用 `format!` 手写拼接，**不引入 toml crate**
 - **压缩 / 哈希**：`flate2`（gzip）+ `tar`（解 tar）+ `sha2` + `hex` + `semver`
@@ -39,6 +39,8 @@ src-tauri/
 │   ├── process.rs            # frpc 子进程生命周期（start/stop_frpc / frpc_running/status / get_logs / reap_orphan_frpc）
 │   ├── frpc_state.rs         # 连接状态机：FrpcConnState / FrpcState / poll_conn_state + emit_log
 │   ├── proxy_health.rs       # 代理本地端口连通性探测（probe_proxy / check_proxies_health）
+│   ├── proxy_relay.rs        # frpc↔本地服务 TCP 中转层 + 流量统计（start/stop_relay / poll_traffic）
+│   ├── latency.rs            # 服务端 TCP 握手延迟探测（probe_server_latency）
 │   ├── frpc_update.rs        # frpc 自更新：版本、GitHub 查询、下载、原子替换
 │   ├── prefs.rs              # 应用偏好：auto_launch / silent_start / auto_connect / schedule（store 持久化、autostart 写入、setup 静默 + 自连判定、schedule 校验）
 │   ├── scheduler.rs          # 按星期定时启停 frpc：spawn_scheduler（分钟对齐 tick）+ maybe_catch_up_start（启动补跑）
@@ -58,6 +60,7 @@ src-tauri/
 | `save_config`                 | `StartArgs`                       | `Result<(), String>`              | `config.rs`       |
 | `load_config`                 | —                                 | `Result<Option<StartArgs>, String>` | `config.rs`     |
 | `check_proxies_health`        | `proxies: Vec<ProxyConfig>`       | `Result<Vec<ProxyHealth>, String>` | `proxy_health.rs`|
+| `probe_server_latency`        | `server_addr: String, server_port: u16` | `Result<LatencyResult, String>` | `latency.rs`|
 | `get_frpc_version`            | —                                 | `Result<String, String>`          | `frpc_update.rs`  |
 | `check_frpc_update`           | —                                 | `Result<Option<UpdateInfo>, String>` | `frpc_update.rs` |
 | `download_frpc_update`        | `version: String`                 | `Result<(), String>`              | `frpc_update.rs`  |
@@ -82,8 +85,8 @@ src-tauri/
 - `ProxyConfig` 按 frp 官方各类型 schema 拆分为 `#[serde(tag = "type")]` 的内部标签 enum：
   - `tcp` / `udp` variant：`name` / `local_ip` / `local_port` / `remote_port`
     （frp 接受 `remotePort`，**不接受** `customDomains`）
-  - `http` / `https` variant：`name` / `local_ip` / `local_port` / `custom_domains: Vec<String>`
-    （frp 接受 `customDomains`，**不接受** `remotePort`——否则报 `unknown field "remotePort"`）
+  - `http` / `https` variant：`name` / `local_ip` / `local_port` / `custom_domain: String`
+    （MoonProxy 仅支持单域名；`build_toml` 序列化到 frp 的 `customDomains` 数组。frp 不接受 `remotePort`——否则报 `unknown field "remotePort"`）
   - 序列化形态：`{ "type": "tcp", "name": "...", ... }`，与前端 `ProxyConfig`
     discriminated union 一一对应；**非法字段在编译期就不可能出现在错的 variant 上**，
     避免 `build_toml` / `probe_proxy` / URL 生成路径再按 `proxy_type` 字符串运行期分叉
@@ -122,6 +125,7 @@ struct Schedule {
 | `frpc://log`                 | `{ line, stream: 'stdout'\|'stderr'\|'system' }` | `emit_log()` 在生成配置、启动、Stdout/Stderr/Terminated/Error 时广播；同时写入 `FrpcState.logs` 环形缓冲（500 条）供 `get_logs` 拉取 |
 | `frpc://status`              | `{ status: 'stopped'\|'connecting'\|'connected'\|'error', error: string\|null }` | `start_frpc` 设 `connecting`；`poll_conn_state` 推 `connected` / `error`；`stop_frpc` 与 `Terminated` 设 `stopped` |
 | `frpc://update-downloaded`   | `{ version: string }`                     | `download_frpc_update` 成功原子写入后                                 |
+| `frpc://traffic`             | `TrafficPayload`（total_in/out_bytes、in/out_rate、connections） | `proxy_relay::poll_traffic` 每 1s 采样累计字节差分速率，仅在 frpc 运行时广播 |
 
 > 协议命名采用 `frpc://` URI 风格，与 Tauri 自带事件命名空间区分。修改载荷时
 > 必须同步 `src/composables/useAppEvents.ts` 中的 `listen<T>` 注册点与
@@ -143,6 +147,9 @@ struct FrpcState {
     started_at: Mutex<Option<Instant>>,
     poll_gen: AtomicU64,               // 每次 start_frpc 自增；旧 polling 据此退出
     logs: Mutex<VecDeque<LogEntry>>,   // 最近 500 条 frpc 日志，独立日志窗口打开时一次性拉取
+    relay: tokio::sync::Mutex<Option<proxy_relay::RelayState>>,  // TCP 中转层；start 填 / stop 清
+    last_in_bytes: AtomicU64,          // 上次采样累计上行字节，差分瞬时速率
+    last_out_bytes: AtomicU64,         // 上次采样累计下行字节，差分瞬时速率
 }
 ```
 
@@ -160,6 +167,8 @@ struct FrpcState {
 `start_frpc` 是 `async fn`，第 2 / 3 步的阻塞工作（fs 写盘 + sysinfo 全表扫描 +
 命中后 sleep）通过 `tauri::async_runtime::spawn_blocking` 丢到 blocking 线程池
 **并行**执行，不在 tokio worker 上直接跑——避免阻塞 Tauri 主线程与 UI 响应。
+
+0. **启动流量中转层**（`proxy_relay::start_relay`，详见 §5.6）：为所有 TCP 类代理（含 HTTP/HTTPS——本质也是 TCP 流）开 listener，改写 `args` 的 `localIP/localPort` 指向中转端口，返回 `RelayState` 挂到 `FrpcState.relay`。UDP 首版不中转。失败（端口 bind 失败）逐条 `emit_log` 跳过，不阻塞启动。
 
 1. **互斥检查 + sidecar 拉起 + 写入状态**（**合并到同一 `state.child`
    锁临界区**）：`lock()` → 检查 `child.is_some()`（是则 `Err("核心引擎已在运行中")`）
@@ -350,6 +359,53 @@ webServer.password = "admin"
 **顺序约束**：`webServer.*` 必须在 `[[proxies]]` 之前（TOML 数组表语法），
 否则报 `unknown field "webServer"`。
 
+### 5.6 流量中转层（`proxy_relay.rs`）
+
+> **目的**：frpc v0.69.1 的 `/api/status` 不暴露任何流量/速率字段。要让用户看到
+> 吞吐曲线，MoonProxy 自己「夹」在 frpc 与用户服务之间：frpc 不再直连用户的
+> `localIP:localPort`，而是连到 MoonProxy 自开的动态中转端口；中转层双向 copy
+> 字节并按方向计数。对所有 TCP 类代理（含 HTTP/HTTPS——本质也是 TCP 流）启用；
+> UDP 首版不中转。
+
+#### 数据结构
+
+```rust
+struct RelayEntry {
+    upstream: String,              // 用户真实本地地址 host:port
+    in_bytes: AtomicU64,           // 用户服务→frpc（上行）
+    out_bytes: AtomicU64,          // frpc→用户服务（下行）
+    connections: AtomicI64,        // 当前活跃中转连接（RAII ConnGuard 配对加减）
+    accept_task: Mutex<Option<JoinHandle<()>>>,
+}
+struct RelayState { entries: Mutex<Vec<(String, Arc<RelayEntry>)>> }  // 按 proxy 名索引
+```
+
+#### 关键函数
+
+| 函数 | 调用时机 | 作用 |
+| --- | --- | --- |
+| `start_relay` | `start_frpc` step 0（build_toml 之前） | 为每条 TCP 代理 bind 动态端口 + spawn accept 循环；改写 `args` 的 `localIP/localPort` 为 `127.0.0.1:<relay_port>` |
+| `stop_relay` | `stop_frpc` / `Terminated` / sidecar spawn 失败 | abort 所有 accept 任务（listener own 在任务内即关闭） |
+| `poll_traffic` | `start_frpc` step 6 spawn | 每 1s 采样累计字节、差分瞬时速率、聚合 connections，emit `frpc://traffic` |
+
+#### 退出条件（`poll_traffic`，与 `poll_conn_state` 对齐）
+
+- `relay` 被清空（stop / Terminated 已接管）
+- `poll_gen` 与起始记录的不一致（新一轮 start 已接管）
+
+#### 计数与速率
+
+- 双向 copy 由 `copy_bidirectional_counted` 实现：并发跑两个 `copy_one_way`，先完成者经 `tokio::select!` 取消另一条（等价于 `tokio::io::copy_bidirectional` 但加计数）
+- `in_rate` / `out_rate` = 本秒累计值 − 上秒累计值（`last_in_bytes` / `last_out_bytes` 存上次基线，`swap` 原子更新）；`start_frpc` 时重置基线避免首帧瞬时速率爆表
+
+#### 连接计数
+
+`ConnGuard` RAII：构造 `fetch_add(1)`、`drop` `fetch_sub(1)`，确保任何退出路径（早期 return / IO 错误）都配对，`connections` 不会泄漏。
+
+#### sidecar spawn 失败的清理
+
+`start_frpc` 中若 sidecar `spawn()` 失败（step 1），`relay` 已写入但无 frpc 接管——同步 spawn 一个清理任务 `guard.take()` + `stop_relay`，与 `stop_frpc` / `Terminated` 路径复用同一幂等模式，避免下次启动中转端口被残留占用。
+
 ## 6. TOML 配置生成与转义
 
 不引入 toml crate；`config::build_toml` 用 `format!` 直接拼。**任何写入 `frpc.toml`
@@ -486,11 +542,15 @@ fn escape_toml(s: &str) -> String {
     if let Err(e) = frpc_update::apply_pending_update(app.handle()) {
         eprintln!("[frpc-update] 应用待安装更新失败: {e}");
     }
-    prefs::maybe_silent_start(app.handle());
-    prefs::maybe_auto_connect(app.handle());
-    scheduler::maybe_catch_up_start(app.handle());
-    scheduler::spawn_scheduler(app.handle().clone());
-    init_tray(app.handle())?;
+    // setup 顶层共享 prefs + auto_launched：避免三个 maybe_* 各自重复 load / 扫 argv（§5.2.1）
+    let app_handle = app.handle();
+    let loaded_prefs = prefs::load(app_handle);
+    let auto_launched = std::env::args().any(|a| a == "--auto-launched");
+    maybe_silent_start(app_handle, &loaded_prefs, auto_launched);
+    maybe_auto_connect(app_handle, &loaded_prefs, auto_launched);
+    scheduler::maybe_catch_up_start(app_handle, &loaded_prefs);
+    scheduler::spawn_scheduler(app_handle.clone());
+    init_tray(app_handle)?;
     Ok(())
 })
 ```

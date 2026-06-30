@@ -24,12 +24,12 @@
 
 ---
 
-![MoonProxy main UI: 4-state circular status button + public access URL + endpoint health indicators](./screenshots/main-en.webp)
+![MoonProxy main UI: real-time traffic chart + start button + public access URL + endpoint health indicators](./screenshots/main-en.webp)
 
 A friendly **desktop GUI for [frp](https://github.com/fatedier/frp)** — the reverse-proxy / NAT-traversal tool.
 You bring your own frps server (self-hosted or any community frps you trust) — MoonProxy
-takes care of the rest: configuration, lifecycle, connection health, auto-update,
-and a polished tray-resident experience.
+takes care of the rest: configuration, lifecycle, connection health, real-time traffic
+monitoring, auto-update, and a polished tray-resident experience.
 
 No CLI, no hand-edited `frpc.toml`, no manual process management — purpose-built for
 **individual developers, self-hosters, and remote workers** who want frp without the terminal.
@@ -40,14 +40,14 @@ No CLI, no hand-edited `frpc.toml`, no manual process management — purpose-bui
 
 - **Bundled frpc sidecar** — users never need to install frp separately.
 - **Visual proxy management** — TCP / UDP / HTTP / HTTPS rules in a single tab.
-- **One-click start/stop** — a circular button reflects 4 states
+- **One-click start/stop** — a start button reflects 4 states
   (stopped / connecting / connected / error); the connected state is derived
   from real frpc evidence, not optimistic flags.
 
 ### ⚙️ Running — stable, resident, hassle-free
 
-- **Live endpoint health** — local port reachability is polled every 3s so you
-  catch broken tunnels before they bite you.
+- **Real-time traffic monitoring** — home tab shows upload/download rate curves, connection count and cumulative traffic so you know your bandwidth usage.
+- **Live endpoint health** — local port reachability is polled at adaptive intervals (3→24s exponential backoff) so you catch broken tunnels before they bite you.
 - **System tray resident** — closing the window hides to tray while frpc keeps
   running in the background.
 - **Launch at login + silent start** — auto-launch can hide straight to tray.
@@ -107,7 +107,7 @@ Yes. MoonProxy is released under the MIT license, with source code and release c
 
 ### What does it add over the raw frp CLI?
 
-Visual proxy rule management, a 4-state circular start/stop button, endpoint health polling (every 3s),
+Visual proxy rule management, a 4-state start button, real-time traffic monitoring (rate curves + connections + cumulative), endpoint health polling (adaptive intervals),
 system tray residency, launch-at-login with silent start, scheduled connect (by weekday and time window),
 automatic frpc engine updates from upstream GitHub Releases (SHA256-verified, atomic swap), and app self-updates.
 

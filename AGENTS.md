@@ -9,7 +9,8 @@
 
 - 用户填入自己的 frps 服务端（地址、端口、Token、用户名），或预置自定义服务商快速切换
 - 可视化管理代理规则（TCP / UDP / HTTP / HTTPS），主页实时显示本地端口连通性
-- 一键启动 / 停止 frpc：圆形大按钮分 4 态（已停止 / 连接中 / 已连接 / 连接错误），
+- 实时流量监控：主页上下行速率曲线、连接数与累计流量（内置 TCP 中转层计数）
+- 一键启动 / 停止 frpc：启动按钮分 4 态（已停止 / 连接中 / 已连接 / 连接错误），
   连接状态由 frpc 自身证据支撑（`/api/status` 探测 + 30s 超时回退）
 - 系统托盘常驻：关闭窗口默认隐藏到托盘，frpc 继续后台运行
 - 开机启动 + 静默启动（自启时隐藏到托盘）
@@ -42,11 +43,15 @@ moonproxy-desktop/
 │   │   ├── useToast.ts
 │   │   ├── useFrpcUpdate.ts      # frpc 引擎自更新
 │   │   ├── useAppUpdate.ts       # 应用本体自更新
-│   │   └── useProxyHealth.ts     # 主页端点健康点 + 指数退避轮询（3→6→12→24s）
+│   │   ├── useProxyHealth.ts     # 主页端点健康点 + 指数退避轮询（3→6→12→24s）
+│   │   ├── useTraffic.ts         # 实时流量：累计 / 滚动窗口 / 瞬时速率
+│   │   └── useAppEvents.ts       # 应用级事件订阅 + 启动初始化
 │   ├── components/
 │   │   ├── TitleBar.vue          # 跨平台标题栏
+│   │   ├── BrandIcon.vue         # 单色品牌标识
 │   │   ├── CloseConfirm.vue      # frpc 运行时的关闭确认弹窗
 │   │   ├── Toast.vue             # 顶部 Toast 渲染
+│   │   ├── home/                 # HomeView 子组件（启动按钮 / 流量图表 / 端点列表 …）
 │   │   └── settings/             # 设置面板 Tab 子组件
 │   │       ├── ProviderTab.vue   # 服务商
 │   │       ├── ProxyTab.vue      # 代理规则
@@ -56,7 +61,8 @@ moonproxy-desktop/
 │   │       ├── LogsTab.vue       # 运行日志
 │   │       └── AboutTab.vue      # 关于（含软件更新 + 核心引擎）
 │   └── views/
-│       ├── HomeView.vue          # 主面板：4 态大圆按钮 / 端点列表 / 引导卡片
+│       ├── HomeView.vue          # 主面板：流量图表 / 启动按钮 / 端点列表 / 引导卡片
+│       ├── ServicesView.vue      # 「服务」视图：复用 ProviderTab + ProxyTab
 │       └── SettingsView.vue      # 设置面板：分段控件 + Tab 切换
 ├── src-tauri/
 │   ├── src/
@@ -67,6 +73,8 @@ moonproxy-desktop/
 │   │   ├── process.rs            # frpc 子进程生命周期
 │   │   ├── frpc_state.rs         # 连接状态机 + 日志环形缓冲
 │   │   ├── proxy_health.rs       # 代理本地端口连通性探测
+│   │   ├── proxy_relay.rs        # frpc↔本地服务 TCP 中转层 + 流量统计
+│   │   ├── latency.rs            # 服务端 TCP 握手延迟探测
 │   │   ├── frpc_update.rs        # frpc 自更新
 │   │   ├── prefs.rs              # 应用偏好
 │   │   ├── scheduler.rs          # 按星期定时启停 frpc

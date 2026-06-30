@@ -15,6 +15,7 @@
   - `@tauri-apps/plugin-shell`：副作用留作扩展位（侧车执行由后端封装）
 - **状态**：原生 `ref` / `reactive`，**不引入** Pinia / Vuex
 - **样式**：手写 CSS（无 Tailwind / UnoCSS），遵循 `styles.css` 中的 HSL 令牌
+- **图表**：`chart.js` + `vue-chartjs`（仅主页实时流量曲线，按需 register 模块）
 
 ## 2. 目录结构与文件职责
 
@@ -22,16 +23,18 @@
 src/
 ├── main.ts                       # 挂载入口；按 URL `?view=logs` 分流到 LogsWindow，否则挂 App
 ├── App.vue                       # 主窗顶层壳：TitleBar + 视图路由 + 全局键盘/右键监听；事件订阅已抽到 useAppEvents
-├── types.ts                      # 前后端共享类型（ProxyConfig / FrpcConfig / Prefs / FrpcStatus / LogEntry）
+├── types.ts                      # 前后端共享类型（ProxyConfig / FrpcConfig / Prefs / FrpcStatus / LogEntry / TrafficPayload）
+├── i18n.ts                       # vue-i18n 实例 + AppLocale 类型 + setLocale / normalizeLocale
 ├── state/                        # 核心响应式状态，按主题拆分（详见 §3.2）
 │   ├── index.ts                  # 聚合 barrel：仅做 `export * from "./xxx"`，不放任何状态
 │   ├── config.ts                 # config + isConfigured + toArgs
 │   ├── prefs.ts                  # prefs（应用偏好）
 │   ├── runtime.ts                # frpcStatus / frpcError / running / logs
-├── commands/                     # 按职责拆分的 invoke 封装（全部吞异常、返回 string | null | boolean）
+├── commands/                     # 按职责拆分的 invoke 封装（全部吞异常、不向前端抛）
 │   ├── config.ts                 # loadConfig / saveConfig
 │   ├── contextMenu.ts            # showEditMenu（输入框原生右键编辑菜单）
 │   ├── frpc.ts                   # startFrpc / stopFrpc
+│   ├── latency.ts                # probeServerLatency（服务端 TCP 握手延迟探测）
 │   └── prefs.ts                  # loadPrefs / savePrefs / setAutoLaunch / refreshAutoLaunch
 ├── styles.css                    # 设计令牌（HSL）+ 通用组件类（.btn / .input / .card / .badge）
 ├── vite-env.d.ts                 # *.vue 模块声明
@@ -41,13 +44,16 @@ src/
 │   ├── useAppUpdate.ts           # 应用本体自更新
 │   ├── useProxyHealth.ts         # 主页端点健康点：proxyHealth + 指数退避轮询（3→6→12→24s）
 │   ├── useAppEvents.ts           # 应用级事件订阅 + 启动初始化（App.vue 已委托）
-│   └── useLogsWindow.ts          # 打开/聚焦独立日志窗口（WebviewWindow label="logs"）
+│   ├── useLogsWindow.ts          # 打开/聚焦独立日志窗口（WebviewWindow label="logs"）
+│   └── useTraffic.ts             # 实时流量：累计字节 / 60s 滚动窗口 / 瞬时速率 + 格式化
 ├── components/
 │   ├── TitleBar.vue              # 跨平台标题栏：mac 交通灯避让、Win 最小化/关闭、拖动区；「服务」「设置」（仅 home）与「返回」（仅非 home）均按 OS 分槽（macOS 右 / Windows 左，远离系统窗口控件）
+│   ├── BrandIcon.vue             # 单色品牌标识（currentColor SVG），跟随标题文字色
 │   ├── CloseConfirm.vue          # frpc 运行时的关闭确认弹窗（最小化 / 退出）
 │   ├── Toast.vue                 # 顶部 Toast 渲染
 │   ├── home/                     # HomeView 拆出的子组件（详见 §5.4）
-│   │   ├── CircleButton.vue      # 大圆按钮 + Canvas 波纹粒子系统 + 4 态文案
+│   │   ├── StartButton.vue       # 底部药丸形启动按钮 + CSS 双层涟漪 + 4 态文案
+│   │   ├── TrafficChart.vue      # 实时流量曲线（chart.js）：连接数 / 上下行速率 / 累计
 │   │   ├── ProxyList.vue         # 公网访问地址列表 + 健康点 + 复制按钮 + 指数退避健康轮询
 │   │   ├── GuideCard.vue         # 未配置引导卡片
 │   │   └── SystemStatus.vue      # 底部只读系统状态栏（开机启动 / 定时连接）
@@ -62,7 +68,8 @@ src/
 │       ├── LogsTab.vue           # 运行日志
 │       └── AboutTab.vue          # 关于（含软件更新 + 核心引擎）
 └── views/
-    ├── HomeView.vue              # 主面板：纯组装（CircleButton + GuideCard + ProxyList + SystemStatus + 错误条 + 启停逻辑）
+    ├── HomeView.vue              # 主面板：纯组装（TrafficChart + GuideCard + ProxyList + StartButton + SystemStatus + 错误条 + 启停逻辑）
+    ├── ServicesView.vue          # 「服务」视图：复用 ProviderTab + ProxyTab 的分段控件
     ├── SettingsView.vue          # 设置面板：分段控件 + Tab 切换
     └── LogsWindow.vue            # 独立日志窗口根组件：get_logs 拉历史 + listen 实时；不复用 App.vue 的关闭/快捷键逻辑
 ```
@@ -80,6 +87,7 @@ src/
 > - `composables/useFrpcUpdate.ts`：frpc 引擎自更新相关状态
 > - `composables/useAppUpdate.ts`：应用本体自更新相关状态
 > - `composables/useProxyHealth.ts`：代理本地端口连通性
+> - `composables/useTraffic.ts`：实时流量（累计 / 滚动窗口 / 瞬时速率）
 > - `composables/useAppEvents.ts`：应用级 Tauri 事件订阅 + 启动初始化（App.vue 已委托）
 
 ### 3.1 类型
@@ -88,14 +96,14 @@ src/
 
 ```ts
 // ProxyConfig 是按 `type` 拆分的 discriminated union——每种 frp 代理类型
-// 有独立的 schema（TCP/UDP 走 remotePort，HTTP/HTTPS 走 customDomains 且
+// 有独立的 schema（TCP/UDP 走 remotePort，HTTP/HTTPS 走 customDomain 且
 // 不接受 remotePort）。聚合在扁平结构里会让 build_toml / URL 生成路径
 // 都需按字符串 type 分叉，且无法在编译期排除非法字段。
 type ProxyConfig =
   | { type: "tcp" | "udp"; name: string; local_ip: string;
       local_port: number; remote_port: number }
   | { type: "http" | "https"; name: string; local_ip: string;
-      local_port: number; custom_domains: string[] };
+      local_port: number; custom_domain: string };
 interface FrpcConfig {
   custom_name: string;   // 自定义服务商显示名称
   server_addr: string; server_port: number;
@@ -133,7 +141,7 @@ interface LogEntry {
 | 标识            | 类型                              | 含义                                                  |
 | --------------- | --------------------------------- | ----------------------------------------------------- |
 | `config`        | `reactive<FrpcConfig>`            | 已保存的服务端 / 代理配置；由 `commands/config.ts` 从 `config.store.json` 加载 / 写回 |
-| `isConfigured()` | `() => boolean`                  | 是否已完成初始配置（有服务端地址且至少一条代理）；用于主页大圆按钮 disabled 态 |
+| `isConfigured()` | `() => boolean`                  | 是否已完成初始配置（有服务端地址且至少一条代理）；用于主页启动按钮 disabled 态 |
 | `toArgs()`      | `() => StartArgs`                | 序列化为 Rust 端 `StartArgs`：trim / Number 化，空字符串 → `null`；`startFrpc` / `saveConfig` 调用入口 |
 
 **`state/prefs.ts`**：
@@ -178,9 +186,18 @@ interface LogEntry {
 | ------------- | ------------------------------------------ | ----------------------------------------------------- |
 | `proxyHealth` | `Ref<(ProxyHealth \| undefined)[]>`        | 每条代理本地端口连通性，下标与 `config.proxies` 对齐；未检测项为 `undefined` |
 
+**`composables/useTraffic.ts`**：
+
+| 标识             | 类型                              | 含义                                                  |
+| ---------------- | --------------------------------- | ----------------------------------------------------- |
+| `totalInBytes`   | `Ref<number>`                     | 累计上行字节（用户服务 → frpc）                       |
+| `totalOutBytes`  | `Ref<number>`                     | 累计下行字节（frpc → 用户服务）                       |
+| `trafficHistory` | `Ref<TrafficSnapshot[]>`          | 60s 滚动窗口采样（每秒一格），驱动流量曲线            |
+| `latestTraffic`  | `Ref<TrafficSnapshot>`            | 最近一次 payload，供组件单值展示                      |
+
 ### 3.3 命令封装
 
-所有命令都返回 `string | null`（错误消息）或 `void`（`loadConfig` 例外，返回 `boolean`），**前端不抛异常**：
+所有命令都吞异常、**前端不抛**：多数返回 `string | null`（错误消息），`loadConfig` 返回 `boolean`，`probeServerLatency` 返回 `LatencyResult | null`（结构化结果，invoke 通道异常时 `null`）：
 
 **`commands/config.ts`**：
 
@@ -210,6 +227,12 @@ interface LogEntry {
 | 函数                       | 对应后端 `invoke`          | 用途                                       |
 | -------------------------- | -------------------------- | ------------------------------------------ |
 | `showEditMenu()`           | `show_edit_menu`           | 弹出原生编辑菜单（剪切/复制/粘贴/全选），仅 input/textarea/select 右键时调 |
+
+**`commands/latency.ts`**：
+
+| 函数                       | 对应后端 `invoke`          | 用途                                       |
+| -------------------------- | -------------------------- | ------------------------------------------ |
+| `probeServerLatency(a,p)`  | `probe_server_latency`     | 单次 TCP 握手探测 `addr:port` 延迟；返回 `LatencyResult \| null`（invoke 通道异常时 null，调用方按 unreachable 兜底） |
 
 **`composables/useFrpcUpdate.ts`**：
 
@@ -248,13 +271,14 @@ if (err) showToast(err, "error");
 ## 4. 与后端的事件协议
 
 事件订阅已抽到 `composables/useAppEvents.ts`，由 `App.vue` 在 setup 顶层调用。
-`useAppEvents` 在 `onMounted` 中注册四类事件，在 `onUnmounted` 中统一 unlisten。
+`useAppEvents` 在 `onMounted` 中注册五类事件，在 `onUnmounted` 中统一 unlisten。
 
 | 事件名                    | 载荷                                | 来源               | 前端处理                              |
 | ------------------------- | ----------------------------------- | ------------------ | ------------------------------------- |
 | `frpc://log`              | `{ stream: 'stdout' \| 'stderr' \| 'system'; line: string }` | 后端 stdout/stderr 解析 + 系统消息 | 推入 `logs.value`，超过 500 条 shift 掉最旧 |
 | `frpc://status`           | `{ status: 'stopped' \| 'connecting' \| 'connected' \| 'error'; error: string \| null }` | start_frpc 设 `connecting`；轮询任务推 `connected` / `error`；stop_frpc 与 `Terminated` 设 `stopped` | 同步 `frpcStatus` / `frpcError`；`error` 时显示顶部红色错误条（由 `components/banners/UpdateBanners.vue` 渲染） |
 | `frpc://update-downloaded` | `{ version: string }`               | 后端下载完成       | 置 `downloadedPending`，触发顶部横幅  |
+| `frpc://traffic`           | `TrafficPayload`（total/rate/connections） | `proxy_relay::poll_traffic` 每秒采样 | `handleTrafficPayload` 更新累计 + 滚动窗口；status 转 `stopped` 时 `resetTraffic` 清零 |
 | `onCloseRequested`         | —                                  | 窗口关闭请求       | frpc 运行时弹 `CloseConfirm` 让用户选「最小化 / 退出」；停止时直接 `exit(0)`；详见后端 `src-tauri/AGENTS.md` §10.2 |
 
 > `useAppEvents` 同时负责启动初始化序列（`loadConfig → loadPrefs → setLocale →
@@ -293,8 +317,9 @@ HomeView 本身是纯组装壳层，所有"实时"职责拆到 `components/home/
 
 | 子件 | 职责 |
 | --- | --- |
-| `CircleButton.vue` | 大圆按钮 + Canvas 波纹粒子系统（`useParticles(frpcStatus)`）+ 4 态文案；只 emit `click`，启停逻辑由 `HomeView.vue` 处理 |
-| `ProxyList.vue` | 公网访问地址列表 + 健康点 + 复制按钮 + 指数退避健康轮询（自管理 onMounted/onUnmounted，3→6→12→24s，整体稳定升档 / 配置变化或状态翻转立即回 3s）；按代理类型分支生成地址：`http`/`https` → `${type}://${custom_domains[0]}`（未配域名时回退到 name 占位），`tcp`/`udp` → `${server_addr}:${remote_port}`；点击地址复制到剪贴板（`navigator.clipboard?.writeText`，失败静默） |
+| `StartButton.vue` | 底部药丸形启动按钮 + CSS 双层涟漪（`::before/::after` 错峰扩散）+ 4 态文案；只 emit `click`，启停逻辑由 `HomeView.vue` 处理 |
+| `TrafficChart.vue` | 实时流量曲线（chart.js）：连接数 / 上下行瞬时速率 / 累计；数据来自 `useTraffic`，由 `frpc://traffic` 事件驱动；frpc 停止时清零 |
+| `ProxyList.vue` | 公网访问地址列表 + 健康点 + 复制按钮 + 指数退避健康轮询（自管理 onMounted/onUnmounted，3→6→12→24s，整体稳定升档 / 配置变化或状态翻转立即回 3s）；按代理类型分支生成地址：`http`/`https` → `${type}://${custom_domain}`，`tcp`/`udp` → `${server_addr}:${remote_port}`；点击地址复制到剪贴板（`navigator.clipboard?.writeText`，失败静默） |
 | `GuideCard.vue` | 未配置引导卡片；emit `services` |
 | `SystemStatus.vue` | 底部只读系统状态栏：开机启动状态 + 定时连接摘要 |
 
@@ -396,7 +421,7 @@ function isFailed(i)     // 仅 ok=false 时为 true（用于行高亮等）
 
 | 类别             | 变量                                                   |
 | ---------------- | ------------------------------------------------------ |
-| 中性背景         | `--background / --foreground / --card`                 |
+| 中性背景         | `--background / --foreground / --card / --muted`       |
 | 文本             | `--muted-foreground`                                   |
 | 状态             | `--primary / --success / --warning / --destructive`    |
 | 边框 / 控件      | `--border / --input / --ring`                          |
