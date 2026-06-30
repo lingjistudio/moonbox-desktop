@@ -43,7 +43,7 @@ src/
 │   ├── useAppEvents.ts           # 应用级事件订阅 + 启动初始化（App.vue 已委托）
 │   └── useLogsWindow.ts          # 打开/聚焦独立日志窗口（WebviewWindow label="logs"）
 ├── components/
-│   ├── TitleBar.vue              # 跨平台标题栏：mac 交通灯避让、Win 最小化/关闭、拖动区；仅 home 视图渲染「服务」「设置」两图标按钮（macOS 右槽 / Windows 左槽）
+│   ├── TitleBar.vue              # 跨平台标题栏：mac 交通灯避让、Win 最小化/关闭、拖动区；「服务」「设置」（仅 home）与「返回」（仅非 home）均按 OS 分槽（macOS 右 / Windows 左，远离系统窗口控件）
 │   ├── CloseConfirm.vue          # frpc 运行时的关闭确认弹窗（最小化 / 退出）
 │   ├── Toast.vue                 # 顶部 Toast 渲染
 │   ├── home/                     # HomeView 拆出的子组件（详见 §5.4）
@@ -307,14 +307,15 @@ HomeView 本身是纯组装壳层，所有"实时"职责拆到 `components/home/
 ### 5.5 TitleBar 跨平台要点
 
 - `navigator.userAgent` 区分 macOS / Windows
-- macOS：`--left-slot: 78px` 给系统交通灯让位；返回按钮加 `margin-left: 78px`
+- macOS：`--left-slot: 78px` 给系统交通灯让位
 - Windows：右槽额外渲染最小化 / 关闭按钮，`-webkit-app-region: no-drag`
 - 拖动区使用 `data-tauri-drag-region` + `.slot-center > * { pointer-events: none }`
   防止标题文字吞掉拖动手势
 - 「服务」（Server 图标）+「设置」（Settings 图标）两个图标按钮：仅 `home`
   视图渲染，点击 emit `services` / `settings`；位置按 OS 分流——macOS 在右槽
-  （与左侧交通灯分立两侧），Windows 在左槽（远离右侧窗口控制按钮）；
-  `services` / `settings` 子视图无功能按钮，右槽仅 Windows 窗口控件
+  （与左侧交通灯分立两侧），Windows 在左槽（远离右侧窗口控制按钮）
+- 返回按钮（ArrowLeft 图标）：仅 `services` / `settings` 子视图渲染，点击 emit
+  `back`；位置同样按 OS 分流——macOS 在右槽，Windows 在左槽（远离系统窗口控件）
 
 ### 5.6 代理健康检测（HomeView）
 
@@ -341,23 +342,41 @@ proxyHealth.value = map;
 
 #### 轮询策略（`ProxyList.vue`）
 
-健康轮询由 `components/home/ProxyList.vue` 自管理，`onMounted` 立即跑一次 + 每 3 秒轮询一次：
+健康轮询由 `components/home/ProxyList.vue` 自管理，采用**指数退避**调度（不是固定间隔）：
+
+- 档位：**3s → 6s → 12s → 24s**，4 档后封顶（3 次倍增）
+- 节奏：每轮探测完成后比对 `proxyHealth` 的「所有代理 ok 值串」签名
+  - 与上一次签名相同 → streak + 1，下次间隔升一档
+  - 与上一次签名不同（任意代理翻转）→ streak = 0，下次间隔回到 3s
+- `onMounted` 立即跑一次并启动自调度循环
+- `watch(props.proxies, deep)` 触发**立即重检 + 重置退避**——新代理的初始
+  signature 必然与上一轮不同，自然落到 3s 起步档
+- `onUnmounted` 清理挂起的 `setTimeout`
 
 ```ts
-onMounted(() => {
-  checkProxiesHealth();
-  healthTimer = setInterval(checkProxiesHealth, 3000);
-});
-onUnmounted(() => {
-  if (healthTimer) clearInterval(healthTimer);
-});
+async function tickHealth() {
+  await checkProxiesHealth();
+  const sig = healthSignature();
+  healthStreak = (healthPrevSig !== null && sig === healthPrevSig) ? healthStreak + 1 : 0;
+  healthPrevSig = sig;
+  healthTimer = setTimeout(tickHealth, nextHealthInterval(healthStreak));
+}
+function nextHealthInterval(streak: number) {
+  return Math.min(HEALTH_INTERVAL_MIN * 2 ** streak, HEALTH_INTERVAL_MAX);
+}
 ```
 
-> **3 秒是经验值**：本地端口状态变化通常很快反馈；过短会频繁触发后端
-> spawn_blocking；过长则修复本地服务后状态点延迟太久。改动时同步评估。
+> **为什么退避**：本地端口状态相对稳定时，定时高频探测既耗 `spawn_blocking`
+> 又反复打同一个端口。稳定后拉长到 24s，最坏延迟到下一次探测 24s；任一代理
+> 翻转立即回 3s 档。改动退避档位 / 封顶值时同步评估「最坏感知延迟」。
+>
+> **首轮特殊**：首次进入时 `healthPrevSig === null`，签名比对必判为"翻转"
+> （streak=0），落到 3s 起步档——与改动前的固定 3s 体验一致。
 >
 > **后端失败静默**：`checkProxiesHealth` 内部 `try/catch` 只 `console.warn`，
 > 不弹错误条——避免频繁轮询失败刷屏；连续失败会显示"正在检测…"，已足够提示。
+> **注意**：单次后端失败也会让 signature 翻转（proxyHealth 保持上次值），
+> 退避策略上反而回 3s 档——这是「失败应当更频繁试探」的直觉一致性，符合预期。
 
 #### 三类辅助函数
 

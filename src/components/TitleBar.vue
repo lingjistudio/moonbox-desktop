@@ -23,12 +23,11 @@ async function closeWin() {
 
 <template>
   <header class="titlebar" :class="{ 'titlebar-mac': isMac, 'titlebar-win': isWin }" data-tauri-drag-region>
-    <!-- 左槽：macOS 给交通灯让位 78px；非首页视图显示返回按钮；Windows home 视图渲染服务/设置（远离右侧窗口控件） -->
+    <!-- 左槽：macOS 给交通灯让位 78px；非首页视图（Windows）显示返回按钮；home 视图（Windows）渲染服务/设置（远离右侧窗口控件） -->
     <div class="slot-left">
       <button
-        v-if="props.view !== 'home'"
+        v-if="props.view !== 'home' && isWin"
         class="btn btn-ghost btn-icon drag-exclude"
-        :class="{ 'back-mac': isMac }"
         @click="emit('back')"
         :title="t('common_back')"
         :aria-label="t('common_back')"
@@ -52,7 +51,7 @@ async function closeWin() {
       <span v-else class="view-title">{{ t("settings_view_title") }}</span>
     </div>
 
-    <!-- 右槽：macOS home 视图入口 + Windows 窗口控制 -->
+    <!-- 右槽：macOS home 视图入口 / macOS 非 home 视图返回按钮 + Windows 窗口控制 -->
     <div class="slot-right">
       <div v-if="props.view === 'home' && isMac" class="titlebar-actions">
         <button class="btn btn-ghost btn-icon drag-exclude" @click="emit('services')">
@@ -62,6 +61,15 @@ async function closeWin() {
           <Settings :size="16" />
         </button>
       </div>
+      <button
+        v-else-if="props.view !== 'home' && isMac"
+        class="btn btn-ghost btn-icon drag-exclude"
+        @click="emit('back')"
+        :title="t('common_back')"
+        :aria-label="t('common_back')"
+      >
+        <ArrowLeft :size="18" />
+      </button>
       <div v-if="isWin" class="win-controls">
         <button
           class="win-btn win-btn-min drag-exclude"
@@ -165,11 +173,6 @@ async function closeWin() {
 .view-title {
   font-size: 13px;
   font-weight: 600;
-}
-
-/* 返回按钮在 macOS 上需避开 78px 的交通灯区域，向右偏移到其右侧 */
-.back-mac {
-  margin-left: 78px;
 }
 
 /* Windows 窗口控制按钮 */
