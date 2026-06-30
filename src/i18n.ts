@@ -48,11 +48,6 @@ export function setLocale(locale: AppLocale): void {
   i18n.global.locale.value = locale;
 }
 
-/** 读取当前生效的语言 code。 */
-export function getLocale(): AppLocale {
-  return i18n.global.locale.value as AppLocale;
-}
-
 /**
  * 把任意字符串规约为受支持的 AppLocale；非法值回退到默认语言。
  * 用于 prefs 读取后赋值给 i18n 实例。

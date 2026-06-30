@@ -22,7 +22,7 @@ export default {
   settings_tab_logs: "Logs",
   settings_tab_about: "About",
 
-  // Home - big button 4 states
+  // Home - start button 4 states
   home_btn_stopped: "Stopped",
   home_btn_connecting: "Connecting",
   home_btn_connected: "Connected",
@@ -53,6 +53,12 @@ export default {
   home_status_schedule: "Scheduled",
   home_status_schedule_off: "Off",
   home_status_schedule_everyday: "Every day",
+
+  // Home - traffic chart
+  home_traffic_connections: "Connections",
+  home_traffic_up: "Upload",
+  home_traffic_down: "Download",
+  home_traffic_total: "Total ↑ / ↓",
 
   // Home - weekday full names
   home_weekday_mon: "Mon",

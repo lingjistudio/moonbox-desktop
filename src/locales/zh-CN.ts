@@ -22,7 +22,7 @@ export default {
   settings_tab_logs: "日志",
   settings_tab_about: "关于",
 
-  // 主页 - 圆形按钮 4 态
+  // 主页 - 启动按钮 4 态
   home_btn_stopped: "已停止",
   home_btn_connecting: "连接中",
   home_btn_connected: "已连接",
@@ -53,6 +53,12 @@ export default {
   home_status_schedule: "定时连接",
   home_status_schedule_off: "未开启",
   home_status_schedule_everyday: "每天",
+
+  // 主页 - 流量图表
+  home_traffic_connections: "连接",
+  home_traffic_up: "上行",
+  home_traffic_down: "下行",
+  home_traffic_total: "累计 ↑ / ↓",
 
   // 主页 - 星期全称
   home_weekday_mon: "周一",

@@ -26,8 +26,6 @@ export const latestTraffic = ref<TrafficSnapshot>({
   connections: 0,
 });
 
-let initialized = false;
-
 /**
  * 处理一次后端 payload：更新累计值与滚动窗口。
  *
@@ -59,14 +57,6 @@ export function resetTraffic() {
   totalOutBytes.value = 0;
   trafficHistory.value = [];
   latestTraffic.value = { timestamp: 0, in_rate: 0, out_rate: 0, connections: 0 };
-}
-
-/** 标记已初始化（预留：未来可能在多窗口场景判别是否需要重置） */
-export function markTrafficInitialized() {
-  initialized = true;
-}
-export function isTrafficInitialized() {
-  return initialized;
 }
 
 /** 把字节数格式化为人类可读速率字符串，如 "12.3 KB/s" */

@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { computed, nextTick, onBeforeUnmount, onMounted, ref } from "vue";
+import { useI18n } from "vue-i18n";
 import { Line } from "vue-chartjs";
 import type { Chart } from "chart.js";
 import {
@@ -32,6 +33,8 @@ ChartJS.register(
   Tooltip
 );
 
+const { t } = useI18n();
+
 // 图表数据：60 秒滚动窗口，每秒一格；初始填 0 让曲线从左铺到右
 const labels = computed(() => {
   const len = trafficHistory.value.length;
@@ -46,7 +49,7 @@ const chartData = computed<ChartData<"line">>(() => {
     labels: labels.value,
     datasets: [
       {
-        label: "上行",
+        label: t("home_traffic_up"),
         data: inData,
         borderColor: "hsl(142 71% 45%)",
         backgroundColor: "hsla(142, 71%, 45%, 0.12)",
@@ -56,7 +59,7 @@ const chartData = computed<ChartData<"line">>(() => {
         pointRadius: 0,
       },
       {
-        label: "下行",
+        label: t("home_traffic_down"),
         data: outData,
         borderColor: "hsl(217 91% 60%)",
         backgroundColor: "hsla(217, 91%, 60%, 0.12)",
@@ -122,19 +125,19 @@ onBeforeUnmount(() => {
   <div class="traffic-card">
     <div class="metrics">
       <div class="metric">
-        <div class="metric-label">连接</div>
+        <div class="metric-label">{{ $t("home_traffic_connections") }}</div>
         <div class="metric-value">{{ connText }}</div>
       </div>
       <div class="metric">
-        <div class="metric-label">上行</div>
+        <div class="metric-label">{{ $t("home_traffic_up") }}</div>
         <div class="metric-value up">{{ upText }}</div>
       </div>
       <div class="metric">
-        <div class="metric-label">下行</div>
+        <div class="metric-label">{{ $t("home_traffic_down") }}</div>
         <div class="metric-value down">{{ downText }}</div>
       </div>
       <div class="metric metric-total">
-        <div class="metric-label">累计 ↑ / ↓</div>
+        <div class="metric-label">{{ $t("home_traffic_total") }}</div>
         <div class="metric-value small">{{ totalText }}</div>
       </div>
     </div>

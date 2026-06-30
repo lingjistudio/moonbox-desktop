@@ -25,8 +25,8 @@ export function isConfigured(): boolean {
  * 序列化为 Rust 端 StartArgs 格式：trim / Number 化，空字符串 → null。
  *
  * `proxies` 按 `type` 分支输出对应字段——TCP/UDP 走 `remote_port`，
- * HTTP/HTTPS 走 `custom_domains`。`ProxyConfig` union 在编译期保证分支合法，
- * 但 React 的 reactive 容器把 union 拍扁为 widest type，所以这里仍需显式 switch。
+ * HTTP/HTTPS 走 `custom_domain`。`ProxyConfig` union 在编译期保证分支合法，
+ * 但 Vue 的 reactive 容器把 union 拍扁为 widest type，所以这里仍需显式 switch。
  */
 export function toArgs() {
   return {

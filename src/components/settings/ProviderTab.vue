@@ -2,10 +2,10 @@
 import type { ComponentPublicInstance } from "vue";
 import { computed, nextTick, onMounted, onUnmounted, reactive, ref, watch } from "vue";
 import { useI18n } from "vue-i18n";
-import { invoke } from "@tauri-apps/api/core";
 import { Eye, EyeOff } from "@lucide/vue";
 import { config } from "../../state";
 import { saveConfig } from "../../commands/config";
+import { probeServerLatency } from "../../commands/latency";
 import { useToast } from "../../composables/useToast";
 import Toast from "../Toast.vue";
 
@@ -24,13 +24,6 @@ const saving = ref(false);
 const showPassword = ref(false);
 function togglePassword() {
   showPassword.value = !showPassword.value;
-}
-
-/** 服务端延迟测试结果，对应后端 `latency::LatencyResult` */
-interface LatencyResult {
-  ok: boolean;
-  latency_ms: number;
-  error_kind: string | null;
 }
 
 type LatencyStatus = "idle" | "testing" | "ok" | "fail";
@@ -79,23 +72,14 @@ async function onTestLatency() {
     return;
   }
   latencyStatus.value = "testing";
-  try {
-    const result = await invoke<LatencyResult>("probe_server_latency", {
-      serverAddr: addr,
-      serverPort: port,
-    });
-    if (result.ok) {
-      latencyStatus.value = "ok";
-      latencyMs.value = result.latency_ms;
-      latencyErrorKind.value = null;
-    } else {
-      latencyStatus.value = "fail";
-      latencyErrorKind.value = result.error_kind ?? "unreachable";
-    }
-  } catch (e) {
+  const result = await probeServerLatency(addr, port);
+  if (result && result.ok) {
+    latencyStatus.value = "ok";
+    latencyMs.value = result.latency_ms;
+    latencyErrorKind.value = null;
+  } else {
     latencyStatus.value = "fail";
-    latencyErrorKind.value = "unreachable";
-    console.warn("[latency] probe_server_latency failed:", e);
+    latencyErrorKind.value = result?.error_kind ?? "unreachable";
   }
 }
 
