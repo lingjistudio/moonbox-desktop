@@ -69,6 +69,12 @@ pub struct FrpcState {
     pub poll_gen: AtomicU64,
     /// 最近 N 条 frpc 日志（`frpc://log` 事件同源）；日志窗口打开时一次性拉取
     pub logs: Mutex<VecDeque<LogEntry>>,
+    /// 中转层状态：仅 `start_frpc` 时填入，`stop` 时清空
+    pub relay: tokio::sync::Mutex<Option<crate::proxy_relay::RelayState>>,
+    /// 上次流量采样的累计下行字节，用于差分瞬时下行速率
+    pub last_in_bytes: AtomicU64,
+    /// 上次流量采样的累计上行字节，用于差分瞬时上行速率
+    pub last_out_bytes: AtomicU64,
 }
 
 impl Default for FrpcState {
@@ -80,6 +86,9 @@ impl Default for FrpcState {
             started_at: Mutex::new(None),
             poll_gen: AtomicU64::new(0),
             logs: Mutex::new(VecDeque::new()),
+            relay: tokio::sync::Mutex::new(None),
+            last_in_bytes: AtomicU64::new(0),
+            last_out_bytes: AtomicU64::new(0),
         }
     }
 }

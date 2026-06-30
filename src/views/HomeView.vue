@@ -3,10 +3,11 @@ import { ref } from "vue";
 
 import { config, isConfigured, frpcStatus } from "../state";
 import { startFrpc, stopFrpc } from "../commands/frpc";
-import CircleButton from "../components/home/CircleButton.vue";
+import StartButton from "../components/home/StartButton.vue";
 import ProxyList from "../components/home/ProxyList.vue";
 import GuideCard from "../components/home/GuideCard.vue";
 import SystemStatus from "../components/home/SystemStatus.vue";
+import TrafficChart from "../components/home/TrafficChart.vue";
 
 const emit = defineEmits<{ services: [] }>();
 
@@ -32,7 +33,7 @@ async function onToggle() {
 <template>
   <div class="home-view">
     <div class="home-body">
-      <CircleButton :disabled="!isConfigured()" @click="onToggle" />
+      <TrafficChart />
       <GuideCard v-if="!isConfigured()" @services="emit('services')" />
       <ProxyList
         :proxies="config.proxies"
@@ -40,6 +41,7 @@ async function onToggle() {
       />
       <div v-if="error" class="error-msg">{{ error }}</div>
     </div>
+    <StartButton :disabled="!isConfigured()" @click="onToggle" />
     <SystemStatus />
   </div>
 </template>

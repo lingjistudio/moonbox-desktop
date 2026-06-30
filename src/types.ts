@@ -107,3 +107,21 @@ export interface LogEntry {
   stream: "stdout" | "stderr" | "system";
   line: string;
 }
+
+/**
+ * 后端 `frpc://traffic` 事件载荷。
+ *
+ * 字节方向（用户视角）：
+ * - `total_in_bytes` / `in_rate`：用户服务 → frpc（upload，上行）
+ * - `total_out_bytes` / `out_rate`：frpc → 用户服务（download，下行）
+ * - `connections`：当前 frpc↔frps work connection 数（中转段连接数等价）
+ *
+ * 仅在 frpc 非停止状态下每秒广播一次。
+ */
+export interface TrafficPayload {
+  total_in_bytes: number;
+  total_out_bytes: number;
+  in_rate: number;
+  out_rate: number;
+  connections: number;
+}

@@ -26,6 +26,17 @@ pub async fn start_frpc(
     state: State<'_, FrpcState>,
     args: StartArgs,
 ) -> Result<(), String> {
+    // 0. 启动 TCP 中转层：返回改写后的 args（localIP/localPort 已指向中转端口）
+    //    + RelayState。失败由 start_relay 内部 emit_log 提示，不阻塞启动流程。
+    let (args, relay_state) = crate::proxy_relay::start_relay(&app, &args).await;
+    {
+        let mut guard = state.relay.lock().await;
+        *guard = Some(relay_state);
+        // 重置上次采样基线，避免首帧瞬时速率爆表（base=0 时 first sample 全计入 rate）
+        state.last_in_bytes.store(0, std::sync::atomic::Ordering::Relaxed);
+        state.last_out_bytes.store(0, std::sync::atomic::Ordering::Relaxed);
+    }
+
     // 1. 解析 frpc.toml 路径（同步、纯路径计算，开销可忽略）
     let cfg_path = frpc_config_path(&app)?;
 
@@ -82,6 +93,26 @@ pub async fn start_frpc(
                 rx
             }
             Err(e) => {
+                // sidecar spawn 失败：state.relay 已写入但无 frpc 子进程接管，
+                // 需同步清理已开的 relay listener 与活跃中转任务，
+                // 避免下次启动时中转端口被前次残留占用。
+                // 与 Terminated / stop_frpc 路径复用同一幂等模式（guard.take()）。
+                let app_for_relay = app.clone();
+                tauri::async_runtime::spawn(async move {
+                    let relay_state = match app_for_relay
+                        .try_state::<crate::frpc_state::FrpcState>()
+                    {
+                        Some(s) => s,
+                        None => return,
+                    };
+                    let taken = {
+                        let mut guard = relay_state.relay.lock().await;
+                        guard.take()
+                    };
+                    if let Some(r) = taken {
+                        crate::proxy_relay::stop_relay(&r).await;
+                    }
+                });
                 return Err(format!("启动核心引擎失败：{e}"));
             }
         }
@@ -145,6 +176,24 @@ pub async fn start_frpc(
                         reset_to_stopped(state.inner());
                         emit_status(&app_for_thread, state.inner());
                     }
+                    // 同步清理 relay：与 stop_frpc 路径对称，
+                    // 避免子进程非预期退出后中转端口残留。
+                    // 与 stop_frpc 共用 `guard.take()`，两条路径幂等。
+                    let app_for_relay = app_for_thread.clone();
+                    tauri::async_runtime::spawn(async move {
+                        let state = match app_for_relay.try_state::<crate::frpc_state::FrpcState>()
+                        {
+                            Some(s) => s,
+                            None => return,
+                        };
+                        let taken = {
+                            let mut guard = state.relay.lock().await;
+                            guard.take()
+                        };
+                        if let Some(r) = taken {
+                            crate::proxy_relay::stop_relay(&r).await;
+                        }
+                    });
                     break;
                 }
                 CommandEvent::Error(err) => {
@@ -159,6 +208,13 @@ pub async fn start_frpc(
     let app_for_poll = app.clone();
     tauri::async_runtime::spawn(async move {
         crate::frpc_state::poll_conn_state(app_for_poll).await;
+    });
+
+    // 6. 启动流量采样任务：1s 间隔，poll_gen 守护退出
+    let app_for_traffic = app.clone();
+    let start_gen = state.poll_gen.load(std::sync::atomic::Ordering::Acquire);
+    tauri::async_runtime::spawn(async move {
+        crate::proxy_relay::poll_traffic(app_for_traffic, start_gen).await;
     });
 
     Ok(())
@@ -178,6 +234,26 @@ pub fn stop_frpc(app: AppHandle, state: State<'_, FrpcState>) -> Result<(), Stri
         emit_log(&app, "system", "已停止核心引擎".into());
         emit_status(&app, state.inner());
     }
+    // 异步清空 relay：abort 所有 accept 任务让 listener 立即关闭。
+    // spawn 内通过 app.try_state 重新获取 State，规避 `State<'_, FrpcState>`
+    // 的 `&FrpcState` 不能 move 进 'static future 的生命周期约束。
+    // 与 Terminated 路径幂等：两处都用 `guard.take()`，第二次调用时已为 None。
+    let app_for_relay = app.clone();
+    tauri::async_runtime::spawn(async move {
+        let state = match app_for_relay.try_state::<crate::frpc_state::FrpcState>() {
+            Some(s) => s,
+            None => return,
+        };
+        // 先 take 出所有权 → 显式 drop guard 释放 relay mutex → 再 await stop_relay，
+        // 让锁不跨越 await 点，更友好 tokio 调度。
+        let taken = {
+            let mut guard = state.relay.lock().await;
+            guard.take()
+        };
+        if let Some(r) = taken {
+            crate::proxy_relay::stop_relay(&r).await;
+        }
+    });
     // child 为 None 时幂等返回 Ok：既兼容前端"未运行也点停止"的路径，
     // 也让退出钩子可以无条件调用而不污染日志。
     Ok(())

@@ -7,6 +7,7 @@
 //! - `frpc_state`：连接状态机 + 日志环形缓冲
 //! - `frpc_update`：frpc 引擎自更新
 //! - `proxy_health`：代理本地端口连通性探测
+//! - `proxy_relay`：frpc 与本地服务之间的 TCP 中转层 + 流量统计
 //! - `prefs`：应用偏好（开机启动 / 静默启动 / 开机自动连接 / 定时连接）
 //! - `tray`：系统托盘
 
@@ -34,6 +35,7 @@ mod latency;
 mod prefs;
 mod process;
 mod proxy_health;
+mod proxy_relay;
 mod scheduler;
 mod tray;
 mod types;

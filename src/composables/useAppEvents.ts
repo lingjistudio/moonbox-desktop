@@ -9,18 +9,22 @@ import { prefs } from "../state/prefs";
 import { loadConfig } from "../commands/config";
 import { loadPrefs, refreshAutoLaunch } from "../commands/prefs";
 import { setLocale, normalizeLocale } from "../i18n";
-import type { FrpcStatus, LogEntry } from "../types";
+import type { FrpcStatus, LogEntry, TrafficPayload } from "../types";
 import {
   initFrpcVersion,
   checkFrpcUpdate,
   downloadedPending,
 } from "./useFrpcUpdate";
 import { checkAppUpdate } from "./useAppUpdate";
+import {
+  handleTrafficPayload,
+  resetTraffic,
+} from "./useTraffic";
 
 /**
  * 应用层副作用集中点：
- * - 注册四类 Tauri 事件监听（`frpc://log` / `frpc://status` /
- *   `frpc://update-downloaded` / 窗口 `onCloseRequested`）
+ * - 注册五类 Tauri 事件监听（`frpc://log` / `frpc://status` /
+ *   `frpc://update-downloaded` / `frpc://traffic` / 窗口 `onCloseRequested`）
  * - 启动初始化序列：`loadConfig → loadPrefs → setLocale → refreshAutoLaunch
  *   → frpc_status → initFrpcVersion → checkFrpcUpdate → checkAppUpdate`
  * - 在 `onUnmounted` 中统一 unlisten，避免泄漏
@@ -35,6 +39,7 @@ export function useAppEvents() {
   let unlistenLog: UnlistenFn | null = null;
   let unlistenStatus: UnlistenFn | null = null;
   let unlistenUpdate: UnlistenFn | null = null;
+  let unlistenTraffic: UnlistenFn | null = null;
   let unlistenClose: UnlistenFn | null = null;
 
   onMounted(async () => {
@@ -52,6 +57,10 @@ export function useAppEvents() {
       (event) => {
         frpcStatus.value = event.payload.status as FrpcStatus;
         frpcError.value = event.payload.error ?? null;
+        // 状态转 stopped 时清零图表数据（保持与后端中转生命周期对齐）
+        if (frpcStatus.value === "stopped") {
+          resetTraffic();
+        }
       }
     );
     // 监听下载完成事件
@@ -59,6 +68,13 @@ export function useAppEvents() {
       "frpc://update-downloaded",
       (event) => {
         downloadedPending.value = event.payload.version;
+      }
+    );
+    // 监听流量更新
+    unlistenTraffic = await listen<TrafficPayload>(
+      "frpc://traffic",
+      (event) => {
+        handleTrafficPayload(event.payload);
       }
     );
     // 拦截关闭：frpc 运行时弹窗让用户选「最小化 / 退出」；
@@ -97,6 +113,7 @@ export function useAppEvents() {
     unlistenLog?.();
     unlistenStatus?.();
     unlistenUpdate?.();
+    unlistenTraffic?.();
     unlistenClose?.();
   });
 
