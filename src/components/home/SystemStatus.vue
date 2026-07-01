@@ -59,6 +59,8 @@ const scheduleSummary = computed(() => {
   padding: 10px 14px 12px;
   border-top: 1px solid hsl(var(--border) / 0.6);
   background: hsl(var(--secondary) / 0.25);
+  user-select: none;
+  -webkit-user-select: none;
 }
 .status-item {
   display: flex;
@@ -77,8 +79,6 @@ const scheduleSummary = computed(() => {
 .status-val {
   margin-left: auto;
   font-weight: 500;
-  user-select: text;
-  -webkit-user-select: text;
 }
 .status-val.on {
   color: hsl(var(--success));

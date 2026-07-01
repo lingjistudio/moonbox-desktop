@@ -359,9 +359,6 @@ onUnmounted(() => {
   font-size: 12px;
   color: hsl(var(--foreground));
   font-weight: 500;
-  user-select: text;
-  -webkit-user-select: text;
-  cursor: text;
   word-break: break-all;
 }
 .mono {
