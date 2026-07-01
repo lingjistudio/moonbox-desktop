@@ -16,7 +16,7 @@ export default {
 
   // Settings tabs
   settings_tab_provider: "Provider",
-  settings_tab_proxy: "Proxies",
+  settings_tab_proxy: "Proxy Rules",
   settings_tab_interface: "Interface",
   settings_tab_launch: "Launch",
   settings_tab_logs: "Logs",

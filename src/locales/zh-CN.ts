@@ -16,7 +16,7 @@ export default {
 
   // 设置面板 Tab
   settings_tab_provider: "服务商",
-  settings_tab_proxy: "代理",
+  settings_tab_proxy: "代理规则",
   settings_tab_interface: "界面",
   settings_tab_launch: "启动",
   settings_tab_logs: "日志",
